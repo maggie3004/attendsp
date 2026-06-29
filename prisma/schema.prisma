@@ -1,13 +1,461 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// AttendSP - Production Prisma Schema
+// PostgreSQL - Scalable Multi-Site Attendance System
 
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────────────────────
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  SUPERVISOR
+  WORKER
+}
+
+enum AttendanceStatus {
+  PRESENT
+  LATE
+  HALF_DAY
+  ABSENT
+  LEAVE
+  TRAVEL_DUTY
+  MANUAL_OVERRIDE
+  PENDING
+}
+
+enum LeaveType {
+  CASUAL
+  SICK
+  ANNUAL
+  EMERGENCY
+  UNPAID
+  COMPENSATORY
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum TravelStatus {
+  PENDING
+  APPROVED
+  ACTIVE
+  COMPLETED
+  REJECTED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  FACE_REGISTER
+  FACE_UPDATE
+  ATTENDANCE_MARK
+  ATTENDANCE_OVERRIDE
+  LEAVE_APPLY
+  LEAVE_APPROVE
+  LEAVE_REJECT
+  SITE_ASSIGN
+  SITE_UNASSIGN
+  CORRECTION_CREATE
+  SETTINGS_UPDATE
+}
+
+enum OfflineQueueStatus {
+  PENDING
+  SYNCED
+  FAILED
+  DUPLICATE
+}
+
+// ─────────────────────────────────────────────────────────────
+// USER & AUTHENTICATION
+// ─────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  employeeId    String    @unique // e.g. EMP-001
+  name          String
+  email         String?   @unique
+  phone         String?   @unique
+  pinHash       String    // bcrypt hashed PIN
+  role          UserRole  @default(WORKER)
+  isActive      Boolean   @default(true)
+  profileImageUrl String?
+  designation   String?
+  department    String?
+
+  // Face recognition
+  faceDescriptor Float[]  // 128-dimensional face embedding
+  faceRegisteredAt DateTime?
+  faceUpdatedAt   DateTime?
+
+  // Relations
+  employee              Employee?
+  sessions              Session[]
+  attendanceRecords     AttendanceRecord[]     @relation("WorkerAttendance")
+  leaveRequests         LeaveRequest[]         @relation("WorkerLeave")
+  travelDuties          TravelDuty[]           @relation("WorkerTravel")
+  auditLogsActor        AuditLog[]             @relation("AuditActor")
+  auditLogsTarget       AuditLog[]             @relation("AuditTarget")
+  overridesDone         AttendanceCorrection[] @relation("CorrectionAdmin")
+  leaveApprovals        LeaveRequest[]         @relation("LeaveApprover")
+  travelApprovals       TravelDuty[]           @relation("TravelApprover")
+  assignedSupervisorSites EmployeeSite[]       @relation("SiteSupervisor")
+  notifications         Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionToken String   @unique
+  expires      DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  @@map("sessions")
+}
+
+// ─────────────────────────────────────────────────────────────
+// EMPLOYEE (Extended profile linked to User)
+// ─────────────────────────────────────────────────────────────
+
+model Employee {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  joiningDate  DateTime?
+  dateOfBirth  DateTime?
+  address      String?
+  emergencyContact String?
+  emergencyPhone   String?
+  notes        String?
+  isOnTravelDuty Boolean @default(false)
+
+  // Site assignments
+  siteAssignments EmployeeSite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("employees")
+}
+
+// ─────────────────────────────────────────────────────────────
+// SITES
+// ─────────────────────────────────────────────────────────────
+
+model Site {
+  id           String  @id @default(cuid())
+  name         String
+  code         String  @unique // e.g. SITE-001
+  address      String
+  city         String?
+  state        String?
+  latitude     Float
+  longitude    Float
+  radiusMeters Int     @default(100) // geofence radius
+
+  // Timing settings (overrides global settings)
+  startTime          String?  // e.g. "09:00" HH:mm
+  endTime            String?  // e.g. "18:00"
+  lateThresholdMins  Int?     // minutes after startTime = LATE
+  halfDayThresholdMins Int?
+  absentThresholdMins  Int?
+
+  isActive     Boolean @default(true)
+  description  String?
+  managerName  String?
+  managerPhone String?
+
+  // Relations
+  employeeAssignments EmployeeSite[]
+  attendanceRecords   AttendanceRecord[]
+  travelDuties        TravelDuty[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sites")
+}
+
+model EmployeeSite {
+  id          String   @id @default(cuid())
+  employeeId  String
+  siteId      String
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  isPrimary   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  role        String?  // "WORKER" | "SUPERVISOR" at this site
+  assignedAt  DateTime @default(now())
+  removedAt   DateTime?
+
+  supervisorId String?
+  supervisor   User?    @relation("SiteSupervisor", fields: [supervisorId], references: [id])
+
+  @@unique([employeeId, siteId])
+  @@map("employee_sites")
+}
+
+// ─────────────────────────────────────────────────────────────
+// ATTENDANCE
+// ─────────────────────────────────────────────────────────────
+
+model AttendanceRecord {
+  id           String           @id @default(cuid())
+  userId       String
+  user         User             @relation("WorkerAttendance", fields: [userId], references: [id])
+  siteId       String?
+  site         Site?            @relation(fields: [siteId], references: [id])
+
+  date         DateTime         @db.Date // date only (no time)
+  checkInTime  DateTime?
+  checkOutTime DateTime?
+  status       AttendanceStatus @default(PENDING)
+
+  // GPS data
+  checkInLat   Float?
+  checkInLng   Float?
+  checkInAccuracy Float?
+  checkOutLat  Float?
+  checkOutLng  Float?
+  checkOutAccuracy Float?
+  gpsDistanceMeters Float? // distance from site center at check-in
+
+  // Face recognition
+  faceConfidence    Float?  // 0.0 - 1.0
+  faceVerified      Boolean @default(false)
+  captureImageUrl   String? // proof image (attendance photo)
+
+  // Flags
+  isManualOverride  Boolean @default(false)
+  isTravelDuty      Boolean @default(false)
+  isWrongSite       Boolean @default(false)
+  flagReason        String?
+
+  // Working hours
+  totalWorkMins     Int?
+
+  // Relations
+  corrections AttendanceCorrection[]
+  images      AttendanceImage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date]) // one record per worker per day
+  @@map("attendance_records")
+}
+
+model AttendanceImage {
+  id           String           @id @default(cuid())
+  attendanceId String
+  attendance   AttendanceRecord @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  imageUrl     String
+  imageType    String           // "CHECK_IN" | "CHECK_OUT" | "FAILED_ATTEMPT"
+  capturedAt   DateTime         @default(now())
+
+  @@map("attendance_images")
+}
+
+model AttendanceCorrection {
+  id              String           @id @default(cuid())
+  attendanceId    String
+  attendance      AttendanceRecord @relation(fields: [attendanceId], references: [id])
+  correctedById   String
+  correctedBy     User             @relation("CorrectionAdmin", fields: [correctedById], references: [id])
+
+  previousStatus  AttendanceStatus
+  newStatus       AttendanceStatus
+  previousCheckIn DateTime?
+  newCheckIn      DateTime?
+  previousCheckOut DateTime?
+  newCheckOut     DateTime?
+  reason          String
+  notes           String?
+
+  createdAt DateTime @default(now())
+
+  @@map("attendance_corrections")
+}
+
+// ─────────────────────────────────────────────────────────────
+// LEAVE
+// ─────────────────────────────────────────────────────────────
+
+model LeaveRequest {
+  id           String      @id @default(cuid())
+  userId       String
+  user         User        @relation("WorkerLeave", fields: [userId], references: [id])
+  type         LeaveType
+  startDate    DateTime    @db.Date
+  endDate      DateTime    @db.Date
+  totalDays    Int
+  reason       String
+  status       LeaveStatus @default(PENDING)
+  isEmergency  Boolean     @default(false)
+
+  approvedById String?
+  approvedBy   User?       @relation("LeaveApprover", fields: [approvedById], references: [id])
+  approverNote String?
+  respondedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("leave_requests")
+}
+
+// ─────────────────────────────────────────────────────────────
+// TRAVEL DUTY
+// ─────────────────────────────────────────────────────────────
+
+model TravelDuty {
+  id           String       @id @default(cuid())
+  userId       String
+  user         User         @relation("WorkerTravel", fields: [userId], references: [id])
+  siteId       String?
+  site         Site?        @relation(fields: [siteId], references: [id])
+
+  destination  String
+  purpose      String
+  startDate    DateTime     @db.Date
+  endDate      DateTime     @db.Date
+  status       TravelStatus @default(PENDING)
+
+  approvedById String?
+  approvedBy   User?        @relation("TravelApprover", fields: [approvedById], references: [id])
+  approverNote String?
+  respondedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("travel_duties")
+}
+
+// ─────────────────────────────────────────────────────────────
+// OFFLINE QUEUE
+// ─────────────────────────────────────────────────────────────
+
+model OfflineQueue {
+  id          String             @id @default(cuid())
+  deviceId    String
+  userId      String
+  payload     Json               // encrypted attendance payload
+  status      OfflineQueueStatus @default(PENDING)
+  syncedAt    DateTime?
+  failReason  String?
+  checksum    String             // to prevent duplicate sync
+  createdAt   DateTime           // original capture time on device
+
+  @@unique([checksum])
+  @@map("offline_queue")
+}
+
+// ─────────────────────────────────────────────────────────────
+// AUDIT LOGS
+// ─────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id           String      @id @default(cuid())
+  actorId      String?
+  actor        User?       @relation("AuditActor", fields: [actorId], references: [id])
+  targetUserId String?
+  targetUser   User?       @relation("AuditTarget", fields: [targetUserId], references: [id])
+
+  action       AuditAction
+  targetTable  String
+  targetId     String
+  oldValues    Json?       // before state
+  newValues    Json?       // after state
+  reason       String?
+  ipAddress    String?
+  userAgent    String?
+  metadata     Json?       // extra context
+
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// ─────────────────────────────────────────────────────────────
+// SETTINGS (Global + Per-Site overridable)
+// ─────────────────────────────────────────────────────────────
+
+model GlobalSettings {
+  id                    String  @id @default(cuid())
+  // Timing defaults
+  defaultStartTime      String  @default("09:00")  // HH:mm
+  defaultEndTime        String  @default("18:00")
+  defaultLateThresholdMins  Int @default(15)
+  defaultHalfDayThresholdMins Int @default(240)    // 4 hours
+  defaultAbsentThresholdMins  Int @default(480)    // 8 hours
+  defaultGeofenceRadius Int    @default(100)       // meters
+
+  // Face recognition
+  faceConfidenceThreshold Float @default(0.6)
+  maxFaceAttempts         Int   @default(3)
+
+  // GPS
+  gpsAccuracyThreshold  Int   @default(50)         // meters
+
+  // Offline
+  offlineSyncEnabled    Boolean @default(true)
+  maxOfflineQueueHours  Int     @default(24)
+
+  // Company info
+  companyName   String  @default("AttendSP")
+  companyLogo   String?
+  timezone      String  @default("Asia/Kolkata")
+  currency      String  @default("INR")
+
+  updatedAt DateTime @updatedAt
+  updatedById String?
+
+  @@map("global_settings")
+}
+
+// ─────────────────────────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────────────────────────
+
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  message     String
+  type        String   // "ATTENDANCE" | "LEAVE" | "ALERT" | "SYSTEM"
+  isRead      Boolean  @default(false)
+  actionUrl   String?
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
 }
