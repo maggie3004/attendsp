@@ -16,8 +16,8 @@ export default async function LeavesPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Leave Requests</h1>
-        <p className="text-sm text-foreground/50 mt-0.5">
+        <h1 className="text-2xl font-bold text-gray-900">Leave Requests</h1>
+        <p className="text-sm text-gray-400 mt-0.5">
           {pendingLeaves.length} pending {pendingLeaves.length === 1 ? 'request' : 'requests'}
         </p>
       </div>

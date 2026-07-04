@@ -8,7 +8,7 @@ export default async function WorkerLayout({ children }: { children: React.React
   if (!session?.user) redirect('/login')
 
   return (
-    <div className="flex flex-col min-h-dvh bg-surface">
+    <div className="flex flex-col min-h-dvh bg-[#f8f9fb]">
       <WorkerHeader user={session.user} />
       <main className="flex-1 pb-20 safe-bottom">
         {children}

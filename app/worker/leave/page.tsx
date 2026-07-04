@@ -45,7 +45,7 @@ export default function WorkerLeavePage() {
     <div className="px-4 py-6 animate-fade-in">
       <div className="mb-6">
         <h1 className="text-xl font-bold">Apply for Leave</h1>
-        <p className="text-sm text-foreground/50 mt-0.5">Submit a leave request for admin approval</p>
+        <p className="text-sm text-gray-400 mt-0.5">Submit a leave request for admin approval</p>
       </div>
 
       <AnimatePresence mode="wait">
@@ -61,9 +61,9 @@ export default function WorkerLeavePage() {
             </div>
             <div>
               <h2 className="text-lg font-bold text-emerald-400">Leave Applied!</h2>
-              <p className="text-sm text-foreground/50 mt-1">Your request has been submitted and is pending admin approval.</p>
+              <p className="text-sm text-gray-400 mt-1">Your request has been submitted and is pending admin approval.</p>
             </div>
-            <button onClick={() => setSubmitted(false)} className="px-6 py-2.5 rounded-xl bg-surface-elevated border border-surface-border text-sm text-foreground/70 hover:text-foreground transition-colors">
+            <button onClick={() => setSubmitted(false)} className="px-6 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-600 hover:text-gray-900 transition-colors">
               Apply Another
             </button>
           </motion.div>
@@ -77,8 +77,8 @@ export default function WorkerLeavePage() {
           >
             {/* Leave Type */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground/70">Leave Type</label>
-              <select {...register('type')} className="w-full px-4 py-3 rounded-xl bg-surface-elevated border border-surface-border text-foreground text-sm focus:outline-none focus:border-brand/50">
+              <label className="text-sm font-medium text-gray-600">Leave Type</label>
+              <select {...register('type')} className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-brand/50">
                 <option value="CASUAL">Casual Leave</option>
                 <option value="SICK">Sick Leave</option>
                 <option value="ANNUAL">Annual Leave</option>
@@ -91,23 +91,23 @@ export default function WorkerLeavePage() {
             {/* Dates */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground/70">From</label>
-                <input type="date" {...register('startDate')} className="w-full px-4 py-3 rounded-xl bg-surface-elevated border border-surface-border text-foreground text-sm focus:outline-none focus:border-brand/50" />
+                <label className="text-sm font-medium text-gray-600">From</label>
+                <input type="date" {...register('startDate')} className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-brand/50" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground/70">To</label>
-                <input type="date" {...register('endDate')} className="w-full px-4 py-3 rounded-xl bg-surface-elevated border border-surface-border text-foreground text-sm focus:outline-none focus:border-brand/50" />
+                <label className="text-sm font-medium text-gray-600">To</label>
+                <input type="date" {...register('endDate')} className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-brand/50" />
               </div>
             </div>
 
             {/* Reason */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground/70">Reason</label>
+              <label className="text-sm font-medium text-gray-600">Reason</label>
               <textarea
                 {...register('reason')}
                 rows={4}
                 placeholder="Please provide a reason for your leave request..."
-                className="w-full px-4 py-3 rounded-xl bg-surface-elevated border border-surface-border text-foreground text-sm focus:outline-none focus:border-brand/50 resize-none placeholder:text-foreground/25"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 text-sm focus:outline-none focus:border-brand/50 resize-none placeholder:text-gray-300"
               />
               {errors.reason && <p className="text-xs text-red-400">{errors.reason.message}</p>}
             </div>
@@ -115,7 +115,7 @@ export default function WorkerLeavePage() {
             {/* Emergency toggle */}
             <label className="flex items-center gap-3 cursor-pointer">
               <input type="checkbox" {...register('isEmergency')} className="w-4 h-4 accent-brand" />
-              <span className="text-sm text-foreground/70">Mark as Emergency Leave</span>
+              <span className="text-sm text-gray-600">Mark as Emergency Leave</span>
             </label>
 
             {error && (

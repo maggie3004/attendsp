@@ -9,8 +9,8 @@ export default async function EmployeesPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Employees</h1>
-          <p className="text-sm text-foreground/50 mt-0.5">Manage your workforce and face registrations</p>
+          <h1 className="text-2xl font-bold text-gray-900">Employees</h1>
+          <p className="text-sm text-gray-400 mt-0.5">Manage your workforce and face registrations</p>
         </div>
         <a
           href="/admin/employees/new"

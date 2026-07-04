@@ -10,7 +10,6 @@ import {
   MapPin,
   CalendarCheck,
   FileText,
-  ClipboardList,
   Settings,
   ShieldCheck,
   Menu,
@@ -51,8 +50,8 @@ function NavItem({
       className={cn(
         'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative',
         isActive
-          ? 'bg-brand/15 text-brand border border-brand/20'
-          : 'text-foreground/50 hover:text-foreground hover:bg-surface-elevated'
+          ? 'bg-indigo-50 text-brand border border-indigo-100'
+          : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
       )}
     >
       <Icon className={cn('w-5 h-5 flex-shrink-0 transition-transform duration-200', isActive && 'scale-110')} />
@@ -60,10 +59,10 @@ function NavItem({
         <span className="text-sm font-medium truncate">{item.label}</span>
       )}
       {isActive && !collapsed && (
-        <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-50" />
+        <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-40" />
       )}
       {collapsed && (
-        <div className="absolute left-full ml-3 px-2 py-1 rounded-lg bg-surface-elevated border border-surface-border text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+        <div className="absolute left-full ml-3 px-2 py-1 rounded-lg bg-white border border-gray-200 text-xs font-medium whitespace-nowrap text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-sm">
           {item.label}
         </div>
       )}
@@ -85,7 +84,7 @@ export function AdminSidebar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/30 z-40 lg:hidden"
             onClick={() => setMobileOpen(false)}
           />
         )}
@@ -94,9 +93,9 @@ export function AdminSidebar() {
       {/* Mobile toggle button */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed top-4 left-4 z-50 p-2 rounded-xl bg-surface-card border border-surface-border lg:hidden"
+        className="fixed top-4 left-4 z-50 p-2 rounded-xl bg-white border border-gray-200 shadow-sm lg:hidden"
       >
-        {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        {mobileOpen ? <X className="w-5 h-5 text-gray-600" /> : <Menu className="w-5 h-5 text-gray-600" />}
       </button>
 
       {/* Sidebar */}
@@ -104,8 +103,7 @@ export function AdminSidebar() {
         animate={{ width: collapsed ? 64 : 240 }}
         transition={{ duration: 0.25, ease: 'easeInOut' }}
         className={cn(
-          'flex-shrink-0 h-full bg-surface-card border-r border-surface-border flex flex-col',
-          // Mobile: fixed drawer
+          'flex-shrink-0 h-full bg-white border-r border-gray-200 flex flex-col',
           'fixed inset-y-0 left-0 z-40 lg:relative lg:translate-x-0',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
           'transition-transform duration-300 lg:transition-none'
@@ -113,12 +111,12 @@ export function AdminSidebar() {
         style={{ width: collapsed ? 64 : 240 }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-surface-border flex-shrink-0">
+        <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-200 flex-shrink-0">
           <div className="w-8 h-8 rounded-xl gradient-brand flex items-center justify-center flex-shrink-0">
             <ShieldCheck className="w-4 h-4 text-white" />
           </div>
           {!collapsed && (
-            <span className="font-bold text-base tracking-tight">
+            <span className="font-bold text-base tracking-tight text-gray-900">
               Attend<span className="gradient-text">SP</span>
             </span>
           )}
@@ -138,10 +136,10 @@ export function AdminSidebar() {
         </nav>
 
         {/* Collapse toggle (desktop only) */}
-        <div className="p-3 border-t border-surface-border hidden lg:block">
+        <div className="p-3 border-t border-gray-200 hidden lg:block">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-foreground/40 hover:text-foreground hover:bg-surface-elevated transition-all text-sm"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-50 transition-all text-sm"
           >
             <Menu className="w-4 h-4" />
             {!collapsed && <span>Collapse</span>}

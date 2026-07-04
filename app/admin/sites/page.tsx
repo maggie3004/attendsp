@@ -17,8 +17,8 @@ export default async function SitesPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Sites</h1>
-          <p className="text-sm text-foreground/50 mt-0.5">{sites.length} active construction sites</p>
+          <h1 className="text-2xl font-bold text-gray-900">Sites</h1>
+          <p className="text-sm text-gray-400 mt-0.5">{sites.length} active construction sites</p>
         </div>
         <a
           href="/admin/sites/new"

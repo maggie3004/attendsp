@@ -57,12 +57,12 @@ export function AttendanceSheet({
   return (
     <div className="card overflow-hidden">
       {/* Controls */}
-      <div className="flex flex-wrap items-center gap-3 p-4 border-b border-surface-border">
+      <div className="flex flex-wrap items-center gap-3 p-4 border-b border-gray-200">
         {/* Date navigation */}
-        <div className="flex items-center gap-1 bg-surface-elevated rounded-xl border border-surface-border">
+        <div className="flex items-center gap-1 bg-gray-50 rounded-xl border border-gray-200">
           <button
             onClick={() => setDate(format(subDays(new Date(date), 1), 'yyyy-MM-dd'))}
-            className="p-2 hover:bg-surface-hover rounded-l-xl transition-colors"
+            className="p-2 hover:bg-[#f8f9fb]-hover rounded-l-xl transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -70,11 +70,11 @@ export function AttendanceSheet({
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="bg-transparent text-sm px-2 py-1.5 text-foreground focus:outline-none w-36"
+            className="bg-transparent text-sm px-2 py-1.5 text-gray-900 focus:outline-none w-36"
           />
           <button
             onClick={() => setDate(format(addDays(new Date(date), 1), 'yyyy-MM-dd'))}
-            className="p-2 hover:bg-surface-hover rounded-r-xl transition-colors"
+            className="p-2 hover:bg-[#f8f9fb]-hover rounded-r-xl transition-colors"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -82,13 +82,13 @@ export function AttendanceSheet({
 
         {/* Search */}
         <div className="relative flex-1 min-w-48">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
           <input
             type="text"
             placeholder="Search employee..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-surface-elevated border border-surface-border rounded-xl text-sm text-foreground placeholder:text-foreground/30 focus:outline-none focus:border-brand/50"
+            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-300 focus:outline-none focus:border-brand/50"
           />
         </div>
 
@@ -96,7 +96,7 @@ export function AttendanceSheet({
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-surface-elevated border border-surface-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:border-brand/50"
+          className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-brand/50"
         >
           <option value="">All Status</option>
           {['PRESENT', 'LATE', 'HALF_DAY', 'ABSENT', 'LEAVE', 'TRAVEL_DUTY', 'MANUAL_OVERRIDE'].map((s) => (
@@ -108,13 +108,13 @@ export function AttendanceSheet({
         <select
           value={siteFilter}
           onChange={(e) => setSiteFilter(e.target.value)}
-          className="bg-surface-elevated border border-surface-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:border-brand/50"
+          className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-brand/50"
         >
           <option value="">All Sites</option>
           {sites.map((s) => <option key={s.id} value={s.code}>{s.name}</option>)}
         </select>
 
-        <div className="text-xs text-foreground/40 ml-auto">{filteredRecords.length} records</div>
+        <div className="text-xs text-gray-400 ml-auto">{filteredRecords.length} records</div>
       </div>
 
       {/* Table */}
@@ -123,14 +123,14 @@ export function AttendanceSheet({
           {[...Array(6)].map((_, i) => <div key={i} className="h-14 shimmer rounded-xl" />)}
         </div>
       ) : filteredRecords.length === 0 ? (
-        <div className="py-16 text-center text-foreground/40 text-sm">
+        <div className="py-16 text-center text-gray-400 text-sm">
           No attendance records for {format(new Date(date), 'dd MMM yyyy')}
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-surface-border text-left text-xs text-foreground/40 uppercase tracking-wider">
+              <tr className="border-b border-gray-200 text-left text-xs text-gray-400 uppercase tracking-wider">
                 <th className="px-5 py-3 font-medium">Employee</th>
                 <th className="px-5 py-3 font-medium">Site</th>
                 <th className="px-5 py-3 font-medium">Check In</th>
@@ -140,14 +140,14 @@ export function AttendanceSheet({
                 <th className="px-5 py-3 font-medium">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-border">
+            <tbody className="divide-y divide-gray-200">
               {filteredRecords.map((record) => (
-                <tr key={record.id} className="hover:bg-surface-elevated/50 transition-colors">
+                <tr key={record.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="font-medium">{record.user.name}</div>
-                    <div className="text-xs text-foreground/40">{record.user.employeeId}</div>
+                    <div className="text-xs text-gray-400">{record.user.employeeId}</div>
                   </td>
-                  <td className="px-5 py-3.5 text-foreground/60">{record.site?.name ?? '—'}</td>
+                  <td className="px-5 py-3.5 text-gray-500">{record.site?.name ?? '—'}</td>
                   <td className="px-5 py-3.5">{record.checkInTime ? formatTime(record.checkInTime) : '—'}</td>
                   <td className="px-5 py-3.5">{record.checkOutTime ? formatTime(record.checkOutTime) : '—'}</td>
                   <td className="px-5 py-3.5">

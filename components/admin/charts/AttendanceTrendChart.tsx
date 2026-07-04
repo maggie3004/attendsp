@@ -24,11 +24,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
     return (
       <div className="glass px-4 py-3 rounded-xl text-sm space-y-1">
-        <div className="text-foreground/60 text-xs mb-2">{label}</div>
+        <div className="text-gray-500 text-xs mb-2">{label}</div>
         {payload.map((entry: any) => (
           <div key={entry.name} className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
-            <span className="text-foreground/70 capitalize">{entry.name}:</span>
+            <span className="text-gray-600 capitalize">{entry.name}:</span>
             <span className="font-medium">{entry.value}</span>
           </div>
         ))}
@@ -63,8 +63,8 @@ export function AttendanceTrendChart() {
     <div className="card p-5">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="font-semibold text-foreground">7-Day Attendance Trend</h2>
-          <p className="text-xs text-foreground/40 mt-0.5">Daily attendance overview</p>
+          <h2 className="font-semibold text-gray-900">7-Day Attendance Trend</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Daily attendance overview</p>
         </div>
       </div>
 

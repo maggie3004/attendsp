@@ -29,8 +29,8 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Settings</h1>
-        <p className="text-sm text-foreground/50 mt-0.5">Configure attendance rules, thresholds, and company preferences</p>
+        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+        <p className="text-sm text-gray-400 mt-0.5">Configure attendance rules, thresholds, and company preferences</p>
       </div>
       <SettingsForm settings={settings} />
     </div>

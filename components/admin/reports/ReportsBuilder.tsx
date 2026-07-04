@@ -96,21 +96,21 @@ export function ReportsBuilder() {
         <h2 className="font-semibold mb-4">Report Filters</h2>
         <div className="flex flex-wrap gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs text-foreground/50">From Date</label>
+            <label className="text-xs text-gray-400">From Date</label>
             <input
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
-              className="bg-surface-elevated border border-surface-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:border-brand/50"
+              className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-brand/50"
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs text-foreground/50">To Date</label>
+            <label className="text-xs text-gray-400">To Date</label>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
-              className="bg-surface-elevated border border-surface-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:border-brand/50"
+              className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-brand/50"
             />
           </div>
           <div className="flex items-end">
@@ -153,18 +153,18 @@ export function ReportsBuilder() {
       {/* Results table */}
       {hasLoaded && (
         <div className="card overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-surface-border">
-            <span className="text-sm text-foreground/60">{data.length} records</span>
+          <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200">
+            <span className="text-sm text-gray-500">{data.length} records</span>
           </div>
           {isLoading ? (
             <div className="p-6 space-y-2">{[...Array(5)].map((_, i) => <div key={i} className="h-12 shimmer rounded-xl" />)}</div>
           ) : data.length === 0 ? (
-            <div className="py-12 text-center text-foreground/40 text-sm">No records found for the selected period</div>
+            <div className="py-12 text-center text-gray-400 text-sm">No records found for the selected period</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-surface-border text-left text-xs text-foreground/40 uppercase tracking-wider">
+                  <tr className="border-b border-gray-200 text-left text-xs text-gray-400 uppercase tracking-wider">
                     <th className="px-5 py-3 font-medium">Date</th>
                     <th className="px-5 py-3 font-medium">Employee</th>
                     <th className="px-5 py-3 font-medium">Site</th>
@@ -173,15 +173,15 @@ export function ReportsBuilder() {
                     <th className="px-5 py-3 font-medium">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-surface-border">
+                <tbody className="divide-y divide-gray-200">
                   {data.map((row, i) => (
-                    <tr key={i} className="hover:bg-surface-elevated/50 transition-colors">
+                    <tr key={i} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-5 py-3">{format(new Date(row.date), 'dd MMM yyyy')}</td>
                       <td className="px-5 py-3">
                         <div className="font-medium">{row.user.name}</div>
-                        <div className="text-xs text-foreground/40">{row.user.employeeId}</div>
+                        <div className="text-xs text-gray-400">{row.user.employeeId}</div>
                       </td>
-                      <td className="px-5 py-3 text-foreground/60">{row.site?.name ?? '—'}</td>
+                      <td className="px-5 py-3 text-gray-500">{row.site?.name ?? '—'}</td>
                       <td className="px-5 py-3">{row.checkInTime ? formatTime(row.checkInTime) : '—'}</td>
                       <td className="px-5 py-3">{row.checkOutTime ? formatTime(row.checkOutTime) : '—'}</td>
                       <td className="px-5 py-3">

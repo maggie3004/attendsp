@@ -55,7 +55,7 @@ export function LeavesPanel({ initialPending }: { initialPending: LeaveRequest[]
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="card py-16 flex flex-col items-center gap-3 text-foreground/40"
+            className="card py-16 flex flex-col items-center gap-3 text-gray-400"
           >
             <CheckCircle2 className="w-10 h-10 text-emerald-400/50" />
             <p>All caught up! No pending leave requests.</p>
@@ -76,7 +76,7 @@ export function LeavesPanel({ initialPending }: { initialPending: LeaveRequest[]
                   </div>
                   <div>
                     <div className="font-medium text-sm">{leave.user.name}</div>
-                    <div className="text-xs text-foreground/40">{leave.user.employeeId}</div>
+                    <div className="text-xs text-gray-400">{leave.user.employeeId}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -93,21 +93,21 @@ export function LeavesPanel({ initialPending }: { initialPending: LeaveRequest[]
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4 text-sm">
-                <div className="flex items-center gap-2 text-foreground/60">
+                <div className="flex items-center gap-2 text-gray-500">
                   <Calendar className="w-4 h-4" />
                   <span>{formatDate(leave.startDate)}</span>
                 </div>
-                <div className="flex items-center gap-2 text-foreground/60">
+                <div className="flex items-center gap-2 text-gray-500">
                   <Calendar className="w-4 h-4" />
                   <span>{formatDate(leave.endDate)}</span>
                 </div>
-                <div className="flex items-center gap-2 text-foreground/60">
+                <div className="flex items-center gap-2 text-gray-500">
                   <Clock className="w-4 h-4" />
                   <span>{leave.totalDays} {leave.totalDays === 1 ? 'day' : 'days'}</span>
                 </div>
               </div>
 
-              <p className="text-sm text-foreground/60 bg-surface-elevated rounded-xl p-3 mb-4 border border-surface-border">
+              <p className="text-sm text-gray-500 bg-gray-50 rounded-xl p-3 mb-4 border border-gray-200">
                 {leave.reason}
               </p>
 

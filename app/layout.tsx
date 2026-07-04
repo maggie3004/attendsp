@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-surface text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f8f9fb] text-gray-900`}
         suppressHydrationWarning
       >
         <Providers>

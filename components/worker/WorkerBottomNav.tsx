@@ -16,7 +16,7 @@ export function WorkerBottomNav() {
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-30 safe-bottom">
-      <div className="glass border-t border-surface-border/50 px-2 py-2">
+      <div className="bg-white border-t border-gray-200 px-2 py-2">
         <div className="flex items-center justify-around">
           {navItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href
@@ -28,7 +28,7 @@ export function WorkerBottomNav() {
                   'flex flex-col items-center gap-1 px-6 py-1.5 rounded-xl transition-all duration-200',
                   isActive
                     ? 'text-brand'
-                    : 'text-foreground/40 hover:text-foreground/70'
+                    : 'text-gray-400 hover:text-gray-600'
                 )}
               >
                 <Icon className={cn('w-5 h-5 transition-transform duration-200', isActive && 'scale-110')} />

@@ -18,21 +18,21 @@ export function ErrorStep({ onRetry }: ErrorStepProps) {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
-        <div className="w-24 h-24 rounded-full bg-red-500/10 flex items-center justify-center">
+        <div className="w-24 h-24 rounded-full bg-red-50 flex items-center justify-center">
           <AlertTriangle className="w-12 h-12 text-red-400" />
         </div>
       </motion.div>
 
       <div className="space-y-1">
-        <h2 className="text-xl font-bold text-red-400">Verification Failed</h2>
-        <p className="text-sm text-foreground/50 max-w-xs">
+        <h2 className="text-xl font-bold text-red-500">Verification Failed</h2>
+        <p className="text-sm text-gray-400 max-w-xs">
           {errorMessage ?? 'Something went wrong. Please try again.'}
         </p>
       </div>
 
       <button
         onClick={onRetry}
-        className="flex items-center gap-2 px-8 py-3.5 rounded-2xl gradient-brand text-white font-semibold text-sm shadow-glow"
+        className="flex items-center gap-2 px-8 py-3.5 rounded-2xl gradient-brand text-white font-semibold text-sm shadow-md"
       >
         <RefreshCw className="w-4 h-4" />
         Try Again

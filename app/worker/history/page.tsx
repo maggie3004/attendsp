@@ -26,7 +26,7 @@ export default async function WorkerHistoryPage() {
     <div className="px-4 py-6 space-y-5 animate-fade-in">
       <div>
         <h1 className="text-xl font-bold">My Attendance</h1>
-        <p className="text-sm text-foreground/50 mt-0.5">This month&apos;s records</p>
+        <p className="text-sm text-gray-400 mt-0.5">This month&apos;s records</p>
       </div>
       <WorkerHistoryList records={records} />
     </div>
