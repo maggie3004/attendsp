@@ -5,7 +5,7 @@
  */
 
 import { prisma } from './db'
-import type { AuditAction } from '@prisma/client'
+import type { AuditAction, Prisma } from '@prisma/client'
 
 export interface CreateAuditLogParams {
   actorId?: string
@@ -32,12 +32,13 @@ export async function createAuditLog(
         action: params.action,
         targetTable: params.targetTable,
         targetId: params.targetId,
-        oldValues: params.oldValues ?? undefined,
-        newValues: params.newValues ?? undefined,
+        // Prisma v6 requires explicit cast from Record<string, unknown> to InputJsonValue
+        oldValues: params.oldValues as Prisma.InputJsonValue ?? undefined,
+        newValues: params.newValues as Prisma.InputJsonValue ?? undefined,
         reason: params.reason,
         ipAddress: params.ipAddress,
         userAgent: params.userAgent,
-        metadata: params.metadata ?? undefined,
+        metadata: params.metadata as Prisma.InputJsonValue ?? undefined,
       },
     })
   } catch (error) {

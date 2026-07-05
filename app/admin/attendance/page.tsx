@@ -11,10 +11,10 @@ export default async function AttendancePage() {
   ])
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Attendance</h1>
-        <p className="text-sm text-gray-400 mt-0.5">View and manage attendance records across all sites</p>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Attendance</h1>
+        <p className="text-sm font-medium text-slate-500 mt-1">View and manage attendance records across all sites</p>
       </div>
       <AttendanceSheet sites={sites} employees={employees} />
     </div>

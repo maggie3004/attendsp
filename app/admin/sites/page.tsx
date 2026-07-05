@@ -14,15 +14,15 @@ export default async function SitesPage() {
   })
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sites</h1>
-          <p className="text-sm text-gray-400 mt-0.5">{sites.length} active construction sites</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Sites</h1>
+          <p className="text-sm font-medium text-slate-500 mt-1">{sites.length} active construction sites</p>
         </div>
         <a
           href="/admin/sites/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-brand text-white text-sm font-semibold shadow-glow hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-brand hover:bg-brand-600 text-white text-sm font-bold shadow-sm transition-colors"
         >
           + Add Site
         </a>

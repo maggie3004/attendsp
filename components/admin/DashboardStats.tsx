@@ -35,11 +35,11 @@ function StatCard({ label, value, total, icon: Icon, color, bgColor, index }: St
           </span>
         )}
       </div>
-      <div className="text-2xl font-bold text-gray-800 tabular-nums">{value}</div>
-      <div className="text-xs text-gray-400 mt-0.5">{label}</div>
+      <div className="text-2xl font-bold text-slate-900 tabular-nums tracking-tight">{value}</div>
+      <div className="text-xs font-medium text-slate-500 mt-0.5 uppercase tracking-wider">{label}</div>
       {/* Progress bar */}
       {percentage !== null && (
-        <div className="mt-3 h-1 bg-gray-50 rounded-full overflow-hidden">
+        <div className="mt-3 h-1.5 bg-slate-100 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${percentage}%` }}

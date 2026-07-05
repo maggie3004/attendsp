@@ -9,7 +9,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (session.user.role === 'WORKER') redirect('/worker/attendance')
 
   return (
-    <div className="flex h-dvh bg-[#f8f9fb] overflow-hidden">
+    <div className="flex h-dvh bg-surface overflow-hidden">
       {/* Sidebar */}
       <AdminSidebar />
 

@@ -51,18 +51,18 @@ export function EmployeeList() {
   return (
     <div className="card overflow-hidden">
       {/* Filters */}
-      <div className="flex items-center gap-3 p-4 border-b border-gray-200">
+      <div className="flex items-center gap-3 p-4 border-b border-slate-200">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
             placeholder="Search by name, ID, or phone..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-            className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-300 focus:outline-none focus:border-brand/50 transition-colors"
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand/50 transition-colors"
           />
         </div>
-        <div className="text-sm text-gray-400">{total} employees</div>
+        <div className="text-sm font-medium text-slate-500">{total} employees</div>
       </div>
 
       {/* Table */}
@@ -107,16 +107,16 @@ export function EmployeeList() {
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 text-left text-xs text-gray-400 uppercase tracking-wider">
-                  <th className="px-5 py-3 font-medium">Employee</th>
-                  <th className="px-5 py-3 font-medium">Contact</th>
-                  <th className="px-5 py-3 font-medium">Sites</th>
-                  <th className="px-5 py-3 font-medium">Role</th>
-                  <th className="px-5 py-3 font-medium">Face</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
+                <tr className="border-b border-slate-200 text-left text-xs text-slate-500 font-bold uppercase tracking-wider bg-slate-50/50">
+                  <th className="px-5 py-4">Employee</th>
+                  <th className="px-5 py-4">Contact</th>
+                  <th className="px-5 py-4">Sites</th>
+                  <th className="px-5 py-4">Role</th>
+                  <th className="px-5 py-4">Face</th>
+                  <th className="px-5 py-4">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-slate-100">
                 {employees.map((emp, i) => (
                   <motion.tr
                     key={emp.id}
@@ -126,14 +126,14 @@ export function EmployeeList() {
                     className="hover:bg-gray-50/50 transition-colors cursor-pointer"
                     onClick={() => window.location.href = `/admin/employees/${emp.id}`}
                   >
-                    <td className="px-5 py-3.5">
+                    <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full gradient-brand flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                           {emp.name.charAt(0)}
                         </div>
                         <div>
-                          <div className="font-medium">{emp.name}</div>
-                          <div className="text-xs text-gray-400">{emp.employeeId}</div>
+                          <div className="font-bold text-slate-900">{emp.name}</div>
+                          <div className="text-xs font-medium text-slate-500">{emp.employeeId}</div>
                         </div>
                       </div>
                     </td>

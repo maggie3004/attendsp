@@ -13,11 +13,13 @@ export default function WorkerLeavePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<ApplyLeaveInput>({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(applyLeaveSchema),
     defaultValues: {
+      type: 'CASUAL' as const,
       startDate: format(new Date(), 'yyyy-MM-dd'),
       endDate: format(new Date(), 'yyyy-MM-dd'),
+      reason: '',
       isEmergency: false,
     },
   })
@@ -34,8 +36,8 @@ export default function WorkerLeavePage() {
       const json = await res.json()
       if (!res.ok || !json.success) throw new Error(json.error ?? 'Failed to submit')
       setSubmitted(true)
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsLoading(false)
     }

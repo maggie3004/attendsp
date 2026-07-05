@@ -9,13 +9,13 @@ import type { LeaveType, LeaveStatus } from '@prisma/client'
 interface LeaveRequest {
   id: string
   type: LeaveType
-  startDate: string
-  endDate: string
+  startDate: Date | string
+  endDate: Date | string
   totalDays: number
   reason: string
   status: LeaveStatus
   isEmergency: boolean
-  createdAt: string
+  createdAt: Date | string
   user: { id: string; name: string; employeeId: string }
 }
 

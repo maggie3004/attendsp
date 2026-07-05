@@ -10,11 +10,15 @@ const faceSchema = z.object({
   faceDescriptor: z.array(z.number()).length(128), // 128-dimensional embedding
 })
 
+type RouteContext = { params: Promise<{ id: string }> }
+
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: RouteContext
 ) {
   try {
+    const { id } = await params
+
     const session = await auth()
     if (!session?.user?.id || !['SUPER_ADMIN', 'ADMIN', 'SUPERVISOR'].includes(session.user.role)) {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
@@ -30,17 +34,17 @@ export async function POST(
 
     // Get existing user for audit
     const existingUser = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: { faceRegisteredAt: true, profileImageUrl: true },
     })
 
     // Upload face image to storage
-    const filename = `face-${params.id}-${Date.now()}`
+    const filename = `face-${id}-${Date.now()}`
     const { url } = await uploadImage(faceImage, 'faces', filename)
 
     // Update user with face descriptor and image
     const user = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         faceDescriptor,
         profileImageUrl: url,
@@ -52,10 +56,10 @@ export async function POST(
 
     await createAuditLog({
       actorId: session.user.id,
-      targetUserId: params.id,
+      targetUserId: id,
       action: existingUser?.faceRegisteredAt ? 'FACE_UPDATE' : 'FACE_REGISTER',
       targetTable: 'users',
-      targetId: params.id,
+      targetId: id,
       newValues: { faceRegisteredAt: user.faceRegisteredAt },
       ipAddress: getClientIp(req),
     })

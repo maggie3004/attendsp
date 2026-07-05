@@ -93,8 +93,8 @@ export function VerifyingStep() {
   return (
     <div className="card p-8 flex flex-col items-center gap-8 text-center">
       <div>
-        <h2 className="text-base font-semibold text-gray-800">Verifying Attendance</h2>
-        <p className="text-sm text-gray-400 mt-1">Almost done, please wait...</p>
+        <h2 className="text-lg font-bold text-slate-900">Verifying Attendance</h2>
+        <p className="text-sm font-medium text-slate-500 mt-1">Almost done, please wait...</p>
       </div>
 
       {/* Progress steps */}
@@ -113,9 +113,9 @@ export function VerifyingStep() {
             >
               <div className={`
                 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-500
-                ${isDone ? 'bg-green-50 border border-green-200' : ''}
+                ${isDone ? 'bg-green-100 border border-green-200' : ''}
                 ${isCurrent ? 'bg-indigo-50 border border-indigo-200' : ''}
-                ${!isDone && !isCurrent ? 'bg-gray-50 border border-gray-200' : ''}
+                ${!isDone && !isCurrent ? 'bg-slate-50 border border-slate-200' : ''}
               `}>
                 {isCurrent ? (
                   <Loader2 className="w-4 h-4 text-brand animate-spin" />
@@ -126,7 +126,7 @@ export function VerifyingStep() {
                 )}
               </div>
               <div className="text-left">
-                <p className={`text-sm font-medium ${isDone ? 'text-green-600' : isCurrent ? 'text-gray-800' : 'text-gray-300'}`}>
+                <p className={`text-sm font-bold ${isDone ? 'text-green-700' : isCurrent ? 'text-slate-900' : 'text-slate-400'}`}>
                   {label}
                 </p>
               </div>

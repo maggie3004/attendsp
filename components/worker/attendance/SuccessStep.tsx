@@ -37,10 +37,10 @@ export function SuccessStep() {
         transition={{ delay: 0.3 }}
         className="space-y-1"
       >
-        <h2 className="text-xl font-bold text-green-600">
+        <h2 className="text-2xl font-bold text-green-700 tracking-tight">
           {isOffline ? 'Queued Offline' : 'Attendance Marked!'}
         </h2>
-        <p className="text-gray-400 text-sm">
+        <p className="text-slate-500 text-sm font-medium">
           {isOffline
             ? 'Your attendance will sync automatically when you come online.'
             : 'Your attendance has been recorded successfully.'}
@@ -55,24 +55,24 @@ export function SuccessStep() {
         className="w-full card p-4 space-y-3 text-left"
       >
         <div className="flex items-center gap-3 text-sm">
-          <Clock className="w-4 h-4 text-gray-400" />
-          <span className="text-gray-500">Check-in Time</span>
-          <span className="ml-auto font-semibold text-gray-800">{formatTime(now)}</span>
+          <Clock className="w-4 h-4 text-slate-400" />
+          <span className="text-slate-500 font-medium">Check-in Time</span>
+          <span className="ml-auto font-bold text-slate-900">{formatTime(now)}</span>
         </div>
         {matchedSite && (
-          <div className="flex items-center gap-3 text-sm border-t border-gray-200 pt-3">
-            <MapPin className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-500">Site</span>
-            <span className="ml-auto font-semibold text-gray-800 truncate max-w-36">{matchedSite.siteName}</span>
+          <div className="flex items-center gap-3 text-sm border-t border-slate-200 pt-3">
+            <MapPin className="w-4 h-4 text-slate-400" />
+            <span className="text-slate-500 font-medium">Site</span>
+            <span className="ml-auto font-bold text-slate-900 truncate max-w-36">{matchedSite.siteName}</span>
           </div>
         )}
         {gpsData && (
-          <div className="flex items-center gap-3 text-sm border-t border-gray-200 pt-3">
+          <div className="flex items-center gap-3 text-sm border-t border-slate-200 pt-3">
             <div className="w-4 h-4 rounded-full border border-green-400 flex items-center justify-center flex-shrink-0">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
             </div>
-            <span className="text-gray-500">GPS Accuracy</span>
-            <span className="ml-auto font-semibold text-gray-800">±{gpsData.accuracy}m</span>
+            <span className="text-slate-500 font-medium">GPS Accuracy</span>
+            <span className="ml-auto font-bold text-slate-900">±{gpsData.accuracy}m</span>
           </div>
         )}
       </motion.div>
@@ -83,7 +83,7 @@ export function SuccessStep() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
         onClick={reset}
-        className="w-full py-3.5 rounded-2xl bg-gray-50 border border-gray-200 text-sm font-medium text-gray-600 hover:text-gray-900 hover:border-indigo-200 transition-all"
+        className="w-full py-4 rounded-2xl bg-brand text-sm font-bold text-white hover:bg-brand-600 transition-colors shadow-sm"
       >
         Done
       </motion.button>

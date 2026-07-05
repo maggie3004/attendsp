@@ -40,8 +40,8 @@ export function GpsStep() {
   return (
     <div className="card p-8 flex flex-col items-center gap-6 text-center">
       {/* Step indicator */}
-      <div className="flex items-center gap-2 text-xs text-gray-400">
-        <div className="w-5 h-5 rounded-full gradient-brand flex items-center justify-center text-white font-bold">1</div>
+      <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
+        <div className="w-6 h-6 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xs">1</div>
         <span>Getting GPS Location</span>
       </div>
 
@@ -65,8 +65,8 @@ export function GpsStep() {
       <div>
         {status === 'acquiring' && (
           <>
-            <h2 className="text-base font-semibold text-gray-800">Acquiring GPS Signal</h2>
-            <p className="text-sm text-gray-400 mt-1">Please stay still for a moment...</p>
+            <h2 className="text-lg font-bold text-slate-900">Acquiring GPS Signal</h2>
+            <p className="text-sm font-medium text-slate-500 mt-1">Please stay still for a moment...</p>
           </>
         )}
         {status === 'success' && (
@@ -81,8 +81,8 @@ export function GpsStep() {
         )}
         {status === 'error' && (
           <>
-            <h2 className="text-base font-semibold text-red-500">Location Error</h2>
-            <p className="text-sm text-gray-400 mt-1">{errorMsg}</p>
+            <h2 className="text-lg font-bold text-red-500">Location Error</h2>
+            <p className="text-sm font-medium text-slate-500 mt-1">{errorMsg}</p>
           </>
         )}
       </div>
@@ -99,7 +99,7 @@ export function GpsStep() {
       {status === 'error' && (
         <button
           onClick={() => setError(errorMsg ?? 'Location error')}
-          className="px-6 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          className="px-6 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
         >
           Retry
         </button>

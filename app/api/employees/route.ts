@@ -148,8 +148,13 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json({ success: true, data: user }, { status: 201 })
-  } catch (error: any) {
-    if (error?.code === 'P2002') {
+  } catch (error: unknown) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code: string }).code === 'P2002'
+    ) {
       return NextResponse.json({ success: false, error: 'Phone or email already exists' }, { status: 409 })
     }
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })

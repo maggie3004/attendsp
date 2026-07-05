@@ -48,7 +48,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           employeeId: user.employeeId,
           name: user.name,
           email: user.email ?? '',
-          role: user.role,
+          role: user.role as UserRole,
           image: user.profileImageUrl,
         }
       },
@@ -58,8 +58,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.employeeId = (user as { employeeId?: string }).employeeId
-        token.role = (user as { role?: UserRole }).role
+        // user is now properly typed via types/next-auth.d.ts
+        token.employeeId = user.employeeId
+        token.role = user.role
       }
       return token
     },

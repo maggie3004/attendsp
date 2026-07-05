@@ -14,34 +14,7 @@ import type {
   UserRole,
 } from '@prisma/client'
 
-// ─── AUTH ────────────────────────────────────────────────────
-
-declare module 'next-auth' {
-  interface User {
-    id: string
-    employeeId: string
-    role: UserRole
-  }
-  interface Session {
-    user: {
-      id: string
-      name: string
-      email: string
-      image?: string
-      employeeId: string
-      role: UserRole
-    }
-  }
-}
-
-declare module 'next-auth/jwt' {
-  interface JWT {
-    id: string
-    employeeId: string
-    role: UserRole
-  }
-}
-
+// Auth types removed to avoid duplication and module not found errors
 // ─── API RESPONSE ────────────────────────────────────────────
 
 export interface ApiResponse<T = unknown> {

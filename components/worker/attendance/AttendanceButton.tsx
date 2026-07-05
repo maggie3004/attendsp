@@ -10,17 +10,15 @@ export function AttendanceButton() {
   return (
     <div className="flex flex-col items-center gap-5">
       <motion.button
-        whileTap={{ scale: 0.96 }}
+        whileTap={{ scale: 0.98 }}
         onClick={() => setStep('gps')}
-        className="relative w-44 h-44 rounded-full gradient-brand shadow-lg animate-pulse-ring flex flex-col items-center justify-center gap-3 text-white"
+        className="w-64 h-24 rounded-[2rem] bg-brand shadow-md flex items-center justify-center gap-4 text-white hover:bg-brand-600 transition-colors"
         aria-label="Mark Attendance"
       >
-        {/* Outer rings */}
-        <div className="absolute inset-0 rounded-full border-2 border-indigo-300/40 scale-110" />
-        <div className="absolute inset-0 rounded-full border border-indigo-200/20 scale-125" />
-
-        <Fingerprint className="w-14 h-14 drop-shadow-lg" />
-        <span className="text-sm font-semibold tracking-wide">Mark Attendance</span>
+        <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+          <Fingerprint className="w-7 h-7 text-white" />
+        </div>
+        <span className="text-xl font-bold tracking-tight">Mark<br/>Attendance</span>
       </motion.button>
 
       <p className="text-xs text-gray-400 text-center max-w-48">

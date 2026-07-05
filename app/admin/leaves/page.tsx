@@ -14,10 +14,10 @@ export default async function LeavesPage() {
   })
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Leave Requests</h1>
-        <p className="text-sm text-gray-400 mt-0.5">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Leave Requests</h1>
+        <p className="text-sm font-medium text-slate-500 mt-1">
           {pendingLeaves.length} pending {pendingLeaves.length === 1 ? 'request' : 'requests'}
         </p>
       </div>

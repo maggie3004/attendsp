@@ -5,22 +5,22 @@
   --font-mono: var(--font-geist-mono), "JetBrains Mono", monospace;
 
   /* Brand */
-  --color-brand: #4f46e5;
-  --color-brand-600: #4338ca;
+  --color-brand: #5B5CEB;
+  --color-brand-600: #4f46e5;
 
-  /* Surface — light theme */
-  --color-surface: #f8f9fb;
-  --color-surface-card: #ffffff;
-  --color-surface-elevated: #f1f3f7;
-  --color-surface-border: #e2e6ee;
+  /* Surface — SaaS light theme */
+  --color-surface: #F8FAFC;
+  --color-surface-card: #FFFFFF;
+  --color-surface-elevated: #F1F5F9;
+  --color-surface-border: #E5E7EB;
 
   /* Status */
-  --color-present: #16a34a;
-  --color-late: #d97706;
-  --color-halfday: #ea580c;
-  --color-absent: #dc2626;
-  --color-leave: #2563eb;
-  --color-travel: #7c3aed;
+  --color-present: #22C55E;
+  --color-late: #F59E0B;
+  --color-halfday: #F97316;
+  --color-absent: #EF4444;
+  --color-leave: #3B82F6;
+  --color-travel: #8B5CF6;
 }
 
 /* ─── BASE ───────────────────────────────────────────────── */
@@ -39,8 +39,8 @@ html {
 }
 
 body {
-  background-color: #f8f9fb;
-  color: #111827;
+  background-color: #F8FAFC;
+  color: #0F172A;
   font-family: var(--font-sans);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -54,61 +54,55 @@ body {
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track { background: #f1f3f7; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
 
 /* ─── SELECTION ──────────────────────────────────────────── */
 ::selection {
-  background: rgba(79, 70, 229, 0.15);
-  color: #111827;
+  background: rgba(91, 92, 235, 0.15);
+  color: #0F172A;
 }
 
 /* ─── FOCUS ──────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid #5B5CEB;
   outline-offset: 2px;
 }
 
-/* ─── CARD ───────────────────────────────────────────────── */
+/* ─── CARD (Clean SaaS Look) ─────────────────────────────── */
 .card {
-  background: #ffffff;
-  border: 1px solid #e2e6ee;
-  border-radius: 0.75rem;
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 1rem; /* 16px */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .card-elevated {
-  background: #ffffff;
-  border: 1px solid #e2e6ee;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* ─── GLASSMORPHISM ──────────────────────────────────────── */
+/* ─── LEGACY GRADIENTS (Forward-mapped to solid colors) ─── */
 .glass {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
 }
-
-/* ─── GRADIENTS ──────────────────────────────────────────── */
 .gradient-brand {
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: #5B5CEB;
 }
 .gradient-text {
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #5B5CEB;
 }
 .gradient-mesh {
-  background: #f8f9fb;
+  background: #F8FAFC;
 }
 
 /* ─── SHIMMER SKELETON ───────────────────────────────────── */
 .shimmer {
-  background: linear-gradient(90deg, #f1f3f7 25%, #e2e6ee 50%, #f1f3f7 75%);
+  background: linear-gradient(90deg, #F1F5F9 25%, #E5E7EB 50%, #F1F5F9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s linear infinite;
 }
@@ -118,14 +112,14 @@ body {
 }
 
 /* ─── STATUS BADGES ──────────────────────────────────────── */
-.status-present  { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
-.status-late     { background: #fef9c3; color: #a16207; border: 1px solid #fde68a; }
-.status-halfday  { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
-.status-absent   { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
-.status-leave    { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
-.status-travel   { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
-.status-override { background: #cffafe; color: #0e7490; border: 1px solid #a5f3fc; }
-.status-pending  { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+.status-present  { background: #DCFCE7; color: #16A34A; border: 1px solid #BBF7D0; }
+.status-late     { background: #FEF9C3; color: #D97706; border: 1px solid #FDE047; }
+.status-halfday  { background: #FFEDD5; color: #EA580C; border: 1px solid #FED7AA; }
+.status-absent   { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; }
+.status-leave    { background: #DBEAFE; color: #2563EB; border: 1px solid #BFDBFE; }
+.status-travel   { background: #EDE9FE; color: #7C3AED; border: 1px solid #DDD6FE; }
+.status-override { background: #CFFAFE; color: #0891B2; border: 1px solid #A5F3FC; }
+.status-pending  { background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; }
 
 /* ─── ANIMATIONS ─────────────────────────────────────────── */
 @keyframes fadeIn {
@@ -140,11 +134,6 @@ body {
   from { opacity: 0; transform: scale(0.95); }
   to   { opacity: 1; transform: scale(1); }
 }
-@keyframes pulseRing {
-  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(79,70,229,0.4); }
-  70%  { transform: scale(1);    box-shadow: 0 0 0 20px rgba(79,70,229,0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(79,70,229,0); }
-}
 @keyframes bounceDot {
   0%, 80%, 100% { transform: scale(0); }
   40%           { transform: scale(1); }
@@ -153,7 +142,6 @@ body {
 .animate-fade-in   { animation: fadeIn 0.3s ease-out; }
 .animate-slide-up  { animation: slideUp 0.4s ease-out; }
 .animate-scale-in  { animation: scaleIn 0.2s ease-out; }
-.animate-pulse-ring { animation: pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite; }
 
 /* ─── MOBILE SAFE AREA ───────────────────────────────────── */
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
@@ -161,32 +149,33 @@ body {
 
 /* ─── LEAFLET LIGHT THEME ────────────────────────────────── */
 .leaflet-container {
-  background: #f8f9fb !important;
+  background: #F8FAFC !important;
   font-family: var(--font-sans) !important;
 }
 .leaflet-tile {
   filter: none !important;
 }
 .leaflet-control-zoom a {
-  background: #ffffff !important;
-  color: #111827 !important;
-  border-color: #e2e6ee !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #E5E7EB !important;
 }
 .leaflet-popup-content-wrapper {
-  background: #ffffff !important;
-  color: #111827 !important;
-  border: 1px solid #e2e6ee !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 0.75rem !important;
 }
 .leaflet-popup-tip {
-  background: #ffffff !important;
+  background: #FFFFFF !important;
 }
 
 /* ─── INPUT AUTOFILL ─────────────────────────────────────── */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #111827;
-  -webkit-box-shadow: 0 0 0 40px #ffffff inset;
-  caret-color: #111827;
+  -webkit-text-fill-color: #0F172A;
+  -webkit-box-shadow: 0 0 0 40px #FFFFFF inset;
+  caret-color: #0F172A;
 }

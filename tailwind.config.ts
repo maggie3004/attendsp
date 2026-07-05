@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  darkMode: ['class'],
+  darkMode: 'class',
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -18,43 +18,43 @@ const config: Config = {
       colors: {
         // Brand
         brand: {
-          DEFAULT: '#6366f1',
+          DEFAULT: '#5B5CEB',
           50: '#eef2ff',
           100: '#e0e7ff',
           200: '#c7d2fe',
           300: '#a5b4fc',
           400: '#818cf8',
-          500: '#6366f1',
+          500: '#5B5CEB',
           600: '#4f46e5',
           700: '#4338ca',
           800: '#3730a3',
           900: '#312e81',
           950: '#1e1b4b',
         },
-        // Surface (dark UI)
+        // Surface (light UI)
         surface: {
-          DEFAULT: '#0f0f11',
-          card: '#17171a',
-          elevated: '#1e1e22',
-          border: '#2a2a30',
-          hover: '#22222a',
+          DEFAULT: '#F8FAFC',
+          card: '#FFFFFF',
+          elevated: '#F1F5F9',
+          border: '#E5E7EB',
+          hover: '#F8FAFC',
         },
         // Status colors
         status: {
-          present: '#10b981',
-          late: '#f59e0b',
-          halfday: '#f97316',
-          absent: '#ef4444',
-          leave: '#3b82f6',
-          travel: '#8b5cf6',
-          override: '#06b6d4',
-          pending: '#6b7280',
+          present: '#22C55E',
+          late: '#F59E0B',
+          halfday: '#F97316',
+          absent: '#EF4444',
+          leave: '#3B82F6',
+          travel: '#8B5CF6',
+          override: '#06B6D4',
+          pending: '#64748B',
         },
         // Text
         foreground: {
-          DEFAULT: '#f4f4f5',
-          muted: '#9ca3af',
-          subtle: '#6b7280',
+          DEFAULT: '#0F172A',
+          muted: '#9CA3AF',
+          subtle: '#64748B',
         },
       },
       fontFamily: {

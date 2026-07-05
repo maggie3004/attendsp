@@ -76,15 +76,15 @@ export function CameraStep() {
   return (
     <div className="flex flex-col items-center gap-4">
       {/* Step indicator */}
-      <div className="flex items-center gap-2 text-xs text-gray-400">
-        <div className="w-5 h-5 rounded-full bg-green-100 border border-green-300 flex items-center justify-center text-green-600 font-bold text-xs">✓</div>
-        <div className="w-8 h-px bg-gray-200" />
-        <div className="w-5 h-5 rounded-full gradient-brand flex items-center justify-center text-white font-bold text-xs">2</div>
+      <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
+        <div className="w-6 h-6 rounded-full bg-green-100 border border-green-300 flex items-center justify-center text-green-700 font-bold text-xs">✓</div>
+        <div className="w-8 h-px bg-slate-200" />
+        <div className="w-6 h-6 rounded-full bg-brand flex items-center justify-center text-white font-bold text-xs">2</div>
         <span>Capture Face</span>
       </div>
 
       {/* Camera viewfinder */}
-      <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden bg-gray-100 border border-gray-200">
+      <div className="relative w-full max-w-sm aspect-square rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 shadow-sm">
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
@@ -106,20 +106,20 @@ export function CameraStep() {
 
         {/* Loading overlay */}
         {status === 'starting' && (
-          <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center gap-3">
+          <div className="absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-3 backdrop-blur-sm">
             <Loader2 className="w-8 h-8 text-brand animate-spin" />
-            <p className="text-sm text-gray-500">Starting camera...</p>
+            <p className="text-sm font-medium text-slate-500">Starting camera...</p>
           </div>
         )}
 
         {/* Error overlay */}
         {status === 'error' && (
-          <div className="absolute inset-0 bg-white flex flex-col items-center justify-center gap-3 p-6">
-            <AlertCircle className="w-10 h-10 text-red-400" />
-            <p className="text-sm text-center text-gray-500">{errorMsg}</p>
+          <div className="absolute inset-0 bg-white flex flex-col items-center justify-center gap-3 p-6 text-center">
+            <AlertCircle className="w-10 h-10 text-red-500" />
+            <p className="text-sm font-medium text-slate-600">{errorMsg}</p>
             <button
               onClick={startCamera}
-              className="px-4 py-2 rounded-xl bg-brand text-white text-sm"
+              className="mt-2 px-6 py-3 rounded-xl bg-brand text-white font-medium hover:bg-brand-600 transition-colors"
             >
               Try Again
             </button>
@@ -128,7 +128,7 @@ export function CameraStep() {
       </div>
 
       {/* Guide text */}
-      <p className="text-xs text-gray-400 text-center">
+      <p className="text-sm text-slate-500 font-medium text-center">
         Position your face inside the circle. Ensure good lighting.
       </p>
 
@@ -137,7 +137,7 @@ export function CameraStep() {
         {/* Flip camera */}
         <button
           onClick={() => setFacingMode(m => m === 'user' ? 'environment' : 'user')}
-          className="p-3 rounded-2xl bg-gray-50 border border-gray-200 text-gray-400 hover:text-gray-700 transition-colors"
+          className="p-4 rounded-2xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 transition-colors shadow-sm"
         >
           <RotateCcw className="w-5 h-5" />
         </button>
@@ -147,9 +147,9 @@ export function CameraStep() {
           whileTap={{ scale: 0.95 }}
           onClick={captureImage}
           disabled={status !== 'ready'}
-          className="w-20 h-20 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center disabled:opacity-40 shadow-md hover:scale-105 transition-transform"
+          className="w-20 h-20 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center disabled:opacity-40 shadow-sm hover:scale-105 transition-transform"
         >
-          <div className="w-16 h-16 rounded-full gradient-brand flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-brand flex items-center justify-center">
             <Camera className="w-7 h-7 text-white" />
           </div>
         </motion.button>

@@ -4,8 +4,12 @@ import { prisma } from '@/lib/db'
 import { respondLeaveSchema } from '@/lib/validations'
 import { createAuditLog, getClientIp } from '@/lib/audit'
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+type RouteContext = { params: Promise<{ id: string }> }
+
+export async function PATCH(req: Request, { params }: RouteContext) {
   try {
+    const { id } = await params
+
     const session = await auth()
     if (!session?.user?.id || session.user.role === 'WORKER') {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
@@ -17,14 +21,14 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       return NextResponse.json({ success: false, error: parsed.error.issues[0]?.message }, { status: 400 })
     }
 
-    const existing = await prisma.leaveRequest.findUnique({ where: { id: params.id } })
+    const existing = await prisma.leaveRequest.findUnique({ where: { id } })
     if (!existing) return NextResponse.json({ success: false, error: 'Leave request not found' }, { status: 404 })
     if (existing.status !== 'PENDING') {
       return NextResponse.json({ success: false, error: 'Leave request already responded to' }, { status: 409 })
     }
 
     const updated = await prisma.leaveRequest.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status: parsed.data.status,
         approvedById: session.user.id,
@@ -38,7 +42,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
       targetUserId: existing.userId,
       action: parsed.data.status === 'APPROVED' ? 'LEAVE_APPROVE' : 'LEAVE_REJECT',
       targetTable: 'leave_requests',
-      targetId: params.id,
+      targetId: id,
       oldValues: { status: existing.status },
       newValues: { status: parsed.data.status, note: parsed.data.approverNote },
       ipAddress: getClientIp(req),

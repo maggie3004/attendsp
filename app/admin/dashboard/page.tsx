@@ -73,11 +73,11 @@ export default async function DashboardPage() {
   const [session, data] = await Promise.all([auth(), getDashboardData()])
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-400 mt-0.5">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+        <p className="text-sm font-medium text-slate-500 mt-1">
           Welcome back, {session?.user?.name?.split(' ')[0]} — here is today&apos;s overview
         </p>
       </div>

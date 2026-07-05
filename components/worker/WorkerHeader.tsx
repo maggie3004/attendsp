@@ -6,7 +6,7 @@ import type { UserRole } from '@prisma/client'
 
 interface WorkerHeaderProps {
   user: {
-    name: string
+    name?: string | null
     employeeId: string
     role: UserRole
   }
@@ -16,11 +16,11 @@ export function WorkerHeader({ user }: WorkerHeaderProps) {
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white safe-top sticky top-0 z-30">
       <div className="flex items-center gap-2.5">
-        <div className="w-7 h-7 rounded-lg gradient-brand flex items-center justify-center">
+        <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center">
           <ShieldCheck className="w-3.5 h-3.5 text-white" />
         </div>
-        <span className="font-bold text-sm tracking-tight text-gray-900">
-          Attend<span className="gradient-text">SP</span>
+        <span className="font-bold text-sm tracking-tight text-slate-900">
+          Attend<span className="text-brand">SP</span>
         </span>
       </div>
 
