@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { markAttendanceSchema } from '@/lib/validations'
-import { findMatchingSite } from '@/lib/gps'
+import { findMatchingSite, haversineDistance } from '@/lib/gps'
 import { determineCheckInStatus } from '@/lib/attendance-rules'
 import { uploadImage } from '@/lib/storage'
 import { createAuditLog, getClientIp } from '@/lib/audit'
@@ -122,11 +122,10 @@ export async function POST(req: Request) {
     if (!onTravelDuty && sites.length > 0 && !matchedSite) {
       // Worker is outside all assigned geofences
       isWrongSite = true
-      flagReason = `Worker is ${Math.round(
-        Math.min(...sites.map((s) =>
-          Math.sqrt(Math.pow(latitude - s.latitude, 2) + Math.pow(longitude - s.longitude, 2)) * 111000
-        ))
-      )}m from nearest assigned site`
+      const nearestDistance = Math.min(
+        ...sites.map((s) => haversineDistance(latitude, longitude, s.latitude, s.longitude))
+      )
+      flagReason = `Worker is ${Math.round(nearestDistance)}m from nearest assigned site`
     }
 
     // ── Determine site timing config ──────────────────────────

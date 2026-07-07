@@ -30,9 +30,7 @@ export function VerifyingStep() {
       }
 
       if (isOffline) {
-        const checksum = Buffer.from(
-          `${session.user.id}-${gpsData.timestamp}`
-        ).toString('base64')
+        const checksum = btoa(`${session.user.id}-${gpsData.timestamp}`)
         addToQueue({
           userId: session.user.id,
           captureImage: capturedImage,
@@ -46,7 +44,7 @@ export function VerifyingStep() {
       }
 
       try {
-        const response = await fetch('/api/attendance/mark', {
+        const response = await fetch('/api/attendance', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

@@ -51,13 +51,18 @@ export default async function WorkerAttendancePage() {
   const endTime = siteConfig?.endTime ?? globalSettings?.defaultEndTime ?? '18:00'
   const shiftTiming = `${startTime} - ${endTime}`
 
+  // Only pass records that have a check-in time (satisfies the non-nullable prop type)
+  const filteredRecords = recentRecords.filter(
+    (r): r is typeof r & { checkInTime: Date } => r.checkInTime !== null
+  )
+
   return (
     <WorkerAttendanceFlow 
       userName={session.user.name?.split(' ')[0] ?? 'User'}
       todayStatus={todayRecord?.status ?? null}
       assignedSite={assignedSite}
       shiftTiming={shiftTiming}
-      recentRecords={recentRecords}
+      recentRecords={filteredRecords}
     />
   )
 }

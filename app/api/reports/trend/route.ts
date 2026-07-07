@@ -4,6 +4,11 @@ import { prisma } from '@/lib/db'
 import { subDays, format, startOfDay, endOfDay } from 'date-fns'
 
 export async function GET(req: Request) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+  }
+
   const { searchParams } = new URL(req.url)
   const days = parseInt(searchParams.get('days') ?? '7')
 
