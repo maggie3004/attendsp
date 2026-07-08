@@ -1,0 +1,13 @@
+{
+  "name": "AttendSP",
+  "short_name": "AttendSP",
+  "description": "AI-Powered Workforce Attendance & Multi-Site Tracking System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f11",
+  "theme_color": "#0f0f11",
+  "orientation": "portrait",
+  "icons": [],
+  "categories": ["productivity", "business"],
+  "screenshots": []
+}
