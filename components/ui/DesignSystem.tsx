@@ -1,12 +1,13 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { Search, Users, CheckCircle2 } from 'lucide-react'
+import { Search, Users } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Form'
 import { Button } from '@/components/ui/Button'
+import { Sparkline } from '@/components/ui/Sparkline'
 
 interface PageHeaderProps {
   title: string
@@ -17,13 +18,13 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, action, eyebrow }: PageHeaderProps) {
   return (
-    <div className="flex flex-col gap-6 rounded-[1.75rem] border border-slate-200/70 bg-slate-50/80 p-7 shadow-[0_20px_50px_rgba(15,23,42,0.08)] sm:flex-row sm:items-end sm:justify-between">
-      <div className="space-y-3">
-        {eyebrow && <p className="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">{eyebrow}</p>}
-        <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-slate-950">{title}</h1>
-        {description && <p className="max-w-2xl text-base leading-7 text-slate-600">{description}</p>}
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="space-y-1">
+        {eyebrow && <p className="section-kicker">{eyebrow}</p>}
+        <h1 className="text-[24px] font-bold tracking-tight text-foreground">{title}</h1>
+        {description && <p className="max-w-2xl text-sm text-foreground-muted">{description}</p>}
       </div>
-      {action && <div className="flex shrink-0 items-center justify-end">{action}</div>}
+      {action && <div className="flex shrink-0 items-center">{action}</div>}
     </div>
   )
 }
@@ -34,7 +35,11 @@ interface PageToolbarProps {
 }
 
 export function PageToolbar({ children, className }: PageToolbarProps) {
-  return <div className={cn('flex flex-col gap-3 rounded-[1.5rem] border border-slate-200/80 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)]', className)}>{children}</div>
+  return (
+    <div className={cn('flex flex-col gap-3 rounded-2xl border border-surface-border bg-white p-4 shadow-card', className)}>
+      {children}
+    </div>
+  )
 }
 
 interface PageSectionProps {
@@ -49,10 +54,10 @@ export function PageSection({ title, description, action, children, className }:
   return (
     <section className={cn('space-y-4', className)}>
       {(title || description || action) && (
-        <div className="flex flex-col gap-3 rounded-[1.5rem] border border-slate-200/80 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)] sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
-            {title && <h2 className="text-[1.25rem] font-semibold tracking-tight text-slate-900">{title}</h2>}
-            {description && <p className="text-sm text-slate-500">{description}</p>}
+            {title && <h2 className="text-lg font-bold text-foreground">{title}</h2>}
+            {description && <p className="text-sm text-foreground-muted">{description}</p>}
           </div>
           {action && <div className="flex items-center gap-2">{action}</div>}
         </div>
@@ -72,33 +77,33 @@ interface StatsCardProps {
   trend?: 'up' | 'down' | 'steady'
   accent?: string
   tone?: string
+  sparkData?: number[]
+  sparkColor?: string
   className?: string
 }
 
-export function StatsCard({ label, value, icon, sublabel, status, change, trend, accent, tone, className }: StatsCardProps) {
-  const trendClasses = trend === 'down' ? 'bg-red-50 text-red-600' : trend === 'up' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-600'
+export function StatsCard({ label, value, icon, sublabel, change, trend, tone, sparkData, sparkColor, className }: StatsCardProps) {
+  const trendColor = trend === 'down' ? 'text-red-600' : trend === 'up' ? 'text-emerald-600' : 'text-foreground-muted'
 
   return (
-    <Card className={cn('rounded-[1.5rem] border border-slate-200/80 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_40px_rgba(15,23,42,0.12)]', className)}>
-      <div className="flex items-center justify-between gap-4">
-        <div className={cn('grid h-14 w-14 place-items-center rounded-3xl', tone || 'bg-slate-100')}>
-          <div className={cn(accent)}>{icon}</div>
+    <Card className={cn('overflow-hidden bg-white rounded-xl border border-slate-200/60 shadow-sm', className)}>
+      <div className="flex flex-col p-6">
+        <div className="flex justify-between items-start mb-4">
+          <div className={cn('flex h-10 w-10 items-center justify-center rounded-xl', tone || 'bg-slate-100')}>
+            {icon}
+          </div>
+          {change && (
+            <div className={cn('inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold', trendColor, trend === 'down' ? 'bg-red-50' : trend === 'up' ? 'bg-emerald-50' : 'bg-slate-50')}>
+              {change}
+            </div>
+          )}
         </div>
-        {status && <span className="rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-600">{status}</span>}
-      </div>
-
-      <div className="mt-6 space-y-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.32em] text-slate-500">{label}</p>
-          <p className="mt-3 text-3xl font-semibold tracking-tight text-slate-950">{value}</p>
-        </div>
-
-        {sublabel && <p className="text-sm text-slate-500">{sublabel}</p>}
-
-        {(change || trend) && (
-          <div className="flex flex-wrap items-center gap-2 text-sm">
-            {change && <span className={cn('rounded-full px-2.5 py-1 font-semibold', trendClasses)}>{change}</span>}
-            {trend && <span className="text-slate-500">{trend === 'up' ? 'Improving' : trend === 'down' ? 'Declining' : 'Stable'}</span>}
+        <p className="text-sm font-semibold text-slate-500">{label}</p>
+        <p className="mt-1 text-4xl font-bold tracking-tight text-slate-900">{value}</p>
+        {sublabel && <p className="mt-2 text-xs text-slate-400">{sublabel}</p>}
+        {sparkData && (
+          <div className="mt-4 h-[32px] w-full">
+            <Sparkline data={sparkData} color={sparkColor ?? '#2563EB'} height={32} className="w-full" />
           </div>
         )}
       </div>
@@ -116,29 +121,16 @@ interface MetricCardProps {
 
 export function MetricCard({ label, value, description, icon, className }: MetricCardProps) {
   return (
-    <Card className={cn('rounded-[1rem] border border-slate-200 bg-white p-4 shadow-sm', className)}>
+    <Card className={cn('p-4', className)}>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">{label}</p>
-          <p className="mt-2 text-[1.5rem] font-semibold text-slate-900">{value}</p>
-          {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
+          <p className="text-xs font-medium text-foreground-muted">{label}</p>
+          <p className="mt-1 text-2xl font-bold text-foreground">{value}</p>
+          {description && <p className="mt-0.5 text-xs text-foreground-muted">{description}</p>}
         </div>
-        {icon && <div className="rounded-2xl bg-slate-50 p-2.5 text-slate-500">{icon}</div>}
+        {icon && <div className="rounded-xl bg-surface p-2.5 text-foreground-subtle">{icon}</div>}
       </div>
     </Card>
-  )
-}
-
-interface MetricBadgeProps {
-  label: string
-  value: string | number
-}
-
-export function MetricBadge({ label, value }: MetricBadgeProps) {
-  return (
-    <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-600">
-      <span className="font-semibold text-slate-900">{value}</span> {label}
-    </div>
   )
 }
 
@@ -152,15 +144,15 @@ interface InfoCardProps {
 
 export function InfoCard({ title, description, value, icon, className }: InfoCardProps) {
   return (
-    <Card className={cn('rounded-[1.25rem] border border-slate-200/80 bg-white p-5 shadow-[0_8px_24px_rgba(15,23,42,0.06)]', className)}>
+    <Card className={cn('p-5', className)}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-slate-900">{title}</p>
-          {description && <p className="mt-1 text-sm text-slate-500">{description}</p>}
+          <p className="text-sm font-semibold text-foreground">{title}</p>
+          {description && <p className="mt-0.5 text-xs text-foreground-muted">{description}</p>}
         </div>
         {icon}
       </div>
-      {value !== undefined && <p className="mt-4 text-[1.5rem] font-semibold tracking-tight text-slate-900">{value}</p>}
+      {value !== undefined && <p className="mt-3 text-2xl font-bold text-foreground">{value}</p>}
     </Card>
   )
 }
@@ -175,12 +167,12 @@ interface DataTableProps {
 
 export function DataTable({ title, description, action, children, className }: DataTableProps) {
   return (
-    <Card className={cn('rounded-[1rem] border border-slate-200 bg-white shadow-sm', className)}>
+    <Card className={cn('overflow-hidden', className)}>
       {(title || description || action) && (
-        <div className="flex flex-col gap-2 border-b border-slate-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            {title && <h3 className="text-base font-semibold text-slate-900">{title}</h3>}
-            {description && <p className="text-sm text-slate-500">{description}</p>}
+        <div className="flex flex-col gap-2 border-b border-surface-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            {title && <h3 className="text-base font-semibold text-foreground">{title}</h3>}
+            {description && <p className="text-xs text-foreground-muted">{description}</p>}
           </div>
           {action && <div className="flex items-center gap-2">{action}</div>}
         </div>
@@ -200,26 +192,14 @@ interface SearchBarProps {
 export function SearchBar({ value, onChange, placeholder = 'Search...', className }: SearchBarProps) {
   return (
     <div className={cn('relative w-full', className)}>
-      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="pl-11" />
+      <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground-subtle" />
+      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="pl-10" />
     </div>
   )
 }
 
-interface SearchInputProps {
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-  className?: string
-}
-
-export function SearchInput({ value, onChange, placeholder = 'Search…', className }: SearchInputProps) {
-  return (
-    <div className={cn('relative w-full', className)}>
-      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="pl-11" />
-    </div>
-  )
+export function SearchInput({ value, onChange, placeholder = 'Search…', className }: SearchBarProps) {
+  return <SearchBar value={value} onChange={onChange} placeholder={placeholder} className={className} />
 }
 
 interface ActionBarProps {
@@ -228,7 +208,7 @@ interface ActionBarProps {
 }
 
 export function ActionBar({ children, className }: ActionBarProps) {
-  return <div className={cn('flex flex-wrap items-center gap-3 rounded-[1rem] border border-slate-200 bg-white p-4 shadow-sm', className)}>{children}</div>
+  return <div className={cn('flex flex-wrap items-center gap-3 rounded-2xl border border-surface-border bg-white p-4 shadow-card', className)}>{children}</div>
 }
 
 interface SectionCardProps {
@@ -243,15 +223,15 @@ export function SectionCard({ title, description, action, children, className }:
   return (
     <Card className={cn('overflow-hidden', className)}>
       {(title || description || action) && (
-        <div className="flex flex-col gap-3 border-b border-slate-200/80 px-6 py-6 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-1">
-            {title && <h3 className="text-[1rem] font-semibold text-slate-900">{title}</h3>}
-            {description && <p className="text-sm text-slate-500">{description}</p>}
+        <div className="flex flex-col gap-2 border-b border-surface-border px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            {title && <h3 className="text-base font-semibold text-foreground">{title}</h3>}
+            {description && <p className="text-xs text-foreground-muted">{description}</p>}
           </div>
           {action && <div className="shrink-0">{action}</div>}
         </div>
       )}
-      <div className="p-6">{children}</div>
+      <div className="p-5">{children}</div>
     </Card>
   )
 }
@@ -268,29 +248,24 @@ interface EmptyStateProps {
 
 export function EmptyState({ title = 'No records yet', description = 'There is nothing to show right now.', primaryLabel = 'Create', secondaryLabel, onPrimary, onSecondary, icon: Icon = Users }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50/80 px-6 py-16 text-center">
-      <div className="rounded-full bg-white p-3 shadow-sm">
-        <Icon className="h-7 w-7 text-slate-400" />
+    <div className="flex flex-col items-center justify-center gap-6 rounded-[1.5rem] border-2 border-dashed border-slate-200 bg-white px-6 py-16 text-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-slate-100">
+        <Icon className="h-6 w-6 text-slate-400" />
       </div>
       <div className="max-w-md space-y-2">
-        <h3 className="text-lg font-semibold text-slate-900">{title}</h3>
+        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
         <p className="text-sm text-slate-500">{description}</p>
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        {onPrimary && <Button variant="primary" size="sm" onClick={onPrimary}>{primaryLabel}</Button>}
-        {onSecondary && <Button variant="outline" size="sm" onClick={onSecondary}>{secondaryLabel}</Button>}
+      <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+        {onPrimary && <Button variant="primary" size="sm" onClick={onPrimary} className="px-5">{primaryLabel}</Button>}
+        {onSecondary && <Button variant="outline" size="sm" onClick={onSecondary} className="px-5">{secondaryLabel}</Button>}
       </div>
     </div>
   )
 }
 
-interface TableToolbarProps {
-  children: ReactNode
-  className?: string
-}
-
-export function TableToolbar({ children, className }: TableToolbarProps) {
-  return <div className={cn('flex flex-wrap items-center justify-between gap-3 rounded-[1rem] border border-slate-200 bg-white p-4 shadow-sm', className)}>{children}</div>
+export function TableToolbar({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn('flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-surface-border bg-white p-4 shadow-card', className)}>{children}</div>
 }
 
 interface StatusBadgeProps {
@@ -300,44 +275,36 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ label, tone }: StatusBadgeProps) {
   const classes = {
-    success: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-    warning: 'bg-amber-50 text-amber-700 ring-amber-200',
-    danger: 'bg-rose-50 text-rose-700 ring-rose-200',
-    info: 'bg-blue-50 text-blue-700 ring-blue-200',
-    neutral: 'bg-slate-100 text-slate-700 ring-slate-200',
+    success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    warning: 'bg-amber-50 text-amber-700 border-amber-200',
+    danger: 'bg-red-50 text-red-700 border-red-200',
+    info: 'bg-blue-50 text-blue-700 border-blue-200',
+    neutral: 'bg-surface-elevated text-foreground-muted border-surface-border',
   }
 
-  return <span className={cn('inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-inset', classes[tone])}>{label}</span>
+  return (
+    <span className={cn('inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold', classes[tone])}>
+      {label}
+    </span>
+  )
 }
 
-interface PriorityBadgeProps {
-  label: string
-  tone: 'high' | 'medium' | 'low' | 'neutral'
-}
-
-export function PriorityBadge({ label, tone }: PriorityBadgeProps) {
+export function PriorityBadge({ label, tone }: { label: string; tone: 'high' | 'medium' | 'low' | 'neutral' }) {
   const classes = {
-    high: 'bg-rose-50 text-rose-700',
+    high: 'bg-red-50 text-red-700',
     medium: 'bg-amber-50 text-amber-700',
     low: 'bg-emerald-50 text-emerald-700',
-    neutral: 'bg-slate-100 text-slate-700',
+    neutral: 'bg-surface-elevated text-foreground-muted',
   }
-  return <span className={cn('inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold', classes[tone])}>{label}</span>
+  return <span className={cn('inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-semibold', classes[tone])}>{label}</span>
 }
 
-interface RoleBadgeProps {
-  role: string
-}
-
-export function RoleBadge({ role }: RoleBadgeProps) {
-  const map: Record<string, { bg: string; color: string }> = {
-    WORKER: { bg: 'bg-slate-50', color: 'text-slate-700' },
-    SUPERVISOR: { bg: 'bg-blue-50', color: 'text-blue-700' },
-    CONTRACTOR: { bg: 'bg-amber-50', color: 'text-amber-700' },
-    ADMIN: { bg: 'bg-rose-50', color: 'text-rose-700' },
+export function RoleBadge({ role }: { role: string }) {
+  const map: Record<string, string> = {
+    WORKER: 'bg-surface-elevated text-foreground-muted',
+    SUPERVISOR: 'bg-blue-50 text-blue-700',
+    CONTRACTOR: 'bg-amber-50 text-amber-700',
+    ADMIN: 'bg-red-50 text-red-700',
   }
-
-  const token = map[role.toUpperCase()] ?? { bg: 'bg-slate-50', color: 'text-slate-700' }
-
-  return <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold', token.bg, token.color)}>{role}</span>
+  return <span className={cn('inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold', map[role.toUpperCase()] ?? 'bg-surface-elevated text-foreground-muted')}>{role}</span>
 }

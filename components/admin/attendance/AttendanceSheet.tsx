@@ -1,166 +1,89 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
-import { format, subDays, addDays } from 'date-fns'
-import { cn, getStatusColor, getStatusLabel, formatTime } from '@/lib/utils'
-import type { AttendanceStatus } from '@prisma/client'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
-import { Input, Select } from '@/components/ui/Form'
-import { TableContainer, Table, TableHead, TableBody, TableRow, TableHeaderCell, TableCell } from '@/components/ui/Table'
+import { AlertCircle, CheckCircle2, Info, XCircle } from 'lucide-react'
 
-interface AttendanceRecord {
+type EventSeverity = 'green' | 'amber' | 'red' | 'blue'
+
+interface HardwareEvent {
   id: string
-  status: AttendanceStatus
-  checkInTime: string | null
-  checkOutTime: string | null
-  isManualOverride: boolean
-  isWrongSite: boolean
-  flagReason: string | null
-  user: { name: string; employeeId: string }
-  site: { name: string; code: string } | null
+  time: string
+  message: string
+  severity: EventSeverity
 }
+
+const MOCK_EVENTS: HardwareEvent[] = [
+  { id: '1', time: '07:25', message: 'System auto-recovery successful', severity: 'green' },
+  { id: '2', time: '07:20', message: 'Camera thermal sensor error - temperature high', severity: 'red' },
+  { id: '3', time: '07:18', message: 'Network connection restored. Syncing...', severity: 'amber' },
+  { id: '4', time: '07:15', message: 'Network connection dropped. Switched to offline mode.', severity: 'red' },
+  { id: '5', time: '07:03', message: 'Offline queue synced (12 records)', severity: 'green' },
+  { id: '6', time: '07:01', message: 'Worker verified via facial recognition', severity: 'blue' },
+]
 
 export function AttendanceSheet({
   sites,
 }: {
   sites: { id: string; name: string; code: string }[]
 }) {
-  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'))
-  const [siteFilter, setSiteFilter] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
-  const [search, setSearch] = useState('')
-  const [records, setRecords] = useState<AttendanceRecord[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [overrideDialogId, setOverrideDialogId] = useState<string | null>(null)
+  const [events, setEvents] = useState<HardwareEvent[]>([])
 
-  const fetchAttendance = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const params = new URLSearchParams({ from: date, to: date })
-      const res = await fetch(`/api/attendance?${params}`)
-      const data = await res.json()
-      setRecords(data.data ?? [])
-    } finally {
-      setIsLoading(false)
-    }
-  }, [date])
-
-  useEffect(() => { fetchAttendance() }, [fetchAttendance])
-
-  const filteredRecords = records.filter((r) => {
-    const matchSearch = !search || r.user.name.toLowerCase().includes(search.toLowerCase()) || r.user.employeeId.includes(search)
-    const matchStatus = !statusFilter || r.status === statusFilter
-    const matchSite = !siteFilter || r.site?.code === siteFilter
-    return matchSearch && matchStatus && matchSite
-  })
+  useEffect(() => {
+    // Simulate live feed
+    setEvents(MOCK_EVENTS)
+    const timer = setInterval(() => {
+      setEvents(prev => {
+        const newEvent = {
+          id: Date.now().toString(),
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          message: 'Routine health check passed',
+          severity: 'green' as EventSeverity
+        }
+        return [newEvent, ...prev].slice(0, 50)
+      })
+    }, 15000)
+    return () => clearInterval(timer)
+  }, [])
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader
-        title="Attendance register"
-        description="Track daily attendance and apply quick filters for field teams."
+        title="Live Event Feed"
+        description="Real-time hardware and system events."
         action={
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setDate(format(subDays(new Date(date), 1), 'yyyy-MM-dd'))}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-40" />
-            <Button variant="ghost" size="sm" onClick={() => setDate(format(addDays(new Date(date), 1), 'yyyy-MM-dd'))}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center gap-1.5 rounded-full bg-green-50 border border-green-200 px-2.5 py-1">
+            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse-dot" />
+            <span className="text-xs font-semibold text-green-600">LIVE</span>
           </div>
         }
       />
-      <CardContent className="space-y-4">
-        <div className="grid gap-3 md:grid-cols-[1.6fr_1fr_1fr_1fr_160px]">
-          <div className="relative md:col-span-2">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search employee..."
-              className="pl-11"
-            />
-          </div>
-          <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="">All Status</option>
-            {['PRESENT', 'LATE', 'HALF_DAY', 'ABSENT', 'LEAVE', 'TRAVEL_DUTY', 'MANUAL_OVERRIDE'].map((s) => (
-              <option key={s} value={s}>{getStatusLabel(s as AttendanceStatus)}</option>
-            ))}
-          </Select>
-          <Select value={siteFilter} onChange={(e) => setSiteFilter(e.target.value)}>
-            <option value="">All Sites</option>
-            {sites.map((s) => <option key={s.id} value={s.code}>{s.name}</option>)}
-          </Select>
-          <div className="flex items-center text-sm text-slate-500 justify-end">{filteredRecords.length} records</div>
+      <CardContent>
+        <div className="space-y-0">
+          {events.map((event) => (
+            <div key={event.id} className="flex items-start gap-3 border-b border-slate-100 py-3 last:border-0">
+              {event.severity === 'green' && <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />}
+              {event.severity === 'amber' && <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5" />}
+              {event.severity === 'red' && <XCircle className="h-5 w-5 text-red-500 mt-0.5" />}
+              {event.severity === 'blue' && <Info className="h-5 w-5 text-blue-500 mt-0.5" />}
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-foreground">{event.time}</span>
+                  <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-sm ${
+                    event.severity === 'green' ? 'bg-green-100 text-green-700' :
+                    event.severity === 'amber' ? 'bg-amber-100 text-amber-700' :
+                    event.severity === 'red' ? 'bg-red-100 text-red-700' :
+                    'bg-blue-100 text-blue-700'
+                  }`}>
+                    {event.severity === 'blue' ? 'info' : event.severity}
+                  </span>
+                </div>
+                <p className="text-[13px] text-slate-500">{event.message}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </CardContent>
-
-      {/* Table */}
-      {isLoading ? (
-        <CardContent>
-          <div className="space-y-3">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-14 shimmer rounded-2xl" />
-            ))}
-          </div>
-        </CardContent>
-      ) : filteredRecords.length === 0 ? (
-        <CardContent>
-          <div className="py-16 text-center text-slate-500 text-sm">No attendance records for {format(new Date(date), 'dd MMM yyyy')}</div>
-        </CardContent>
-      ) : (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <tr>
-                <TableHeaderCell>Employee</TableHeaderCell>
-                <TableHeaderCell>Site</TableHeaderCell>
-                <TableHeaderCell>Check In</TableHeaderCell>
-                <TableHeaderCell>Check Out</TableHeaderCell>
-                <TableHeaderCell>Status</TableHeaderCell>
-                <TableHeaderCell>Flags</TableHeaderCell>
-                <TableHeaderCell>Action</TableHeaderCell>
-              </tr>
-            </TableHead>
-            <TableBody>
-              {filteredRecords.map((record) => (
-                <TableRow key={record.id}>
-                  <TableCell>
-                    <div className="font-medium text-slate-900">{record.user.name}</div>
-                    <div className="text-xs text-slate-500">{record.user.employeeId}</div>
-                  </TableCell>
-                  <TableCell>{record.site?.name ?? '—'}</TableCell>
-                  <TableCell>{record.checkInTime ? formatTime(record.checkInTime) : '—'}</TableCell>
-                  <TableCell>{record.checkOutTime ? formatTime(record.checkOutTime) : '—'}</TableCell>
-                  <TableCell>
-                    <span className={cn('inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold', getStatusColor(record.status))}>
-                      {getStatusLabel(record.status)}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-2">
-                      {record.isManualOverride && (
-                        <span className="rounded-full border border-cyan-200 bg-cyan-50 px-2 py-1 text-[10px] font-semibold text-cyan-600">Override</span>
-                      )}
-                      {record.isWrongSite && (
-                        <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-600">Wrong Site</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="ghost" size="sm" onClick={() => setOverrideDialogId(record.id)}>
-                      Edit
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
     </Card>
   )
 }

@@ -1,9 +1,9 @@
 'use client'
 
-import { signOut } from 'next-auth/react'
-import { ShieldCheck, LogOut, Bell } from 'lucide-react'
+import { Bell, Menu, ArrowLeft } from 'lucide-react'
 import type { UserRole } from '@prisma/client'
 import { format } from 'date-fns'
+import { usePathname, useRouter } from 'next/navigation'
 
 interface WorkerHeaderProps {
   user: {
@@ -15,29 +15,45 @@ interface WorkerHeaderProps {
 
 export function WorkerHeader({ user }: WorkerHeaderProps) {
   const today = format(new Date(), 'EEEE, d MMMM yyyy')
-  
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,'
+
+  const pathname = usePathname()
+  const isHome = pathname === '/worker'
+
+  const getPageTitle = () => {
+    if (pathname.includes('/history')) return 'My Attendance'
+    if (pathname.includes('/leave')) return 'Leave Requests'
+    if (pathname.includes('/profile')) return 'My Profile'
+    if (pathname.includes('/attendance')) return 'Secure Check-in'
+    return ''
+  }
+
   return (
-    <header className="bg-gradient-to-br from-blue-600 to-blue-700 sticky top-0 z-30 shadow-lg shadow-blue-600/20 safe-top">
-      <div className="flex items-start justify-between gap-4 px-4 py-6">
-        <div className="flex-1 text-white">
-          <p className="text-sm font-medium opacity-90">Good morning,</p>
-          <h1 className="text-2xl font-bold mt-1">{user.name?.split(' ')[0] ?? 'Worker'}</h1>
-          <p className="text-xs opacity-80 mt-2">{today}</p>
+    <header className="sticky top-0 z-30 bg-gradient-to-br from-[#1E40AF] to-[#1e3a8a] py-4 shadow-md safe-top">
+      <div className="flex items-center gap-3 px-4">
+        <button
+          onClick={() => window.dispatchEvent(new Event('toggleWorkerSidebar'))}
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-white transition hover:bg-white/20 lg:hidden"
+          aria-label="Open Menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        <div className="flex-1 min-w-0">
+          <p className="text-[11px] font-medium text-white/80 uppercase tracking-wider">{today}</p>
+          <h1 className="text-[17px] font-bold leading-tight tracking-tight text-white truncate">
+            {isHome ? `${greeting} ${user.name?.split(' ')[0]} 👋` : getPageTitle()}
+          </h1>
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0 pt-1">
-          <button className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30">
-            <Bell className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => signOut({ callbackUrl: '/login' })}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-red-500/40"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
-        </div>
+        <button
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-white transition hover:bg-white/20"
+          aria-label="Notifications"
+        >
+          <Bell className="h-5 w-5" />
+        </button>
       </div>
     </header>
   )
 }
-

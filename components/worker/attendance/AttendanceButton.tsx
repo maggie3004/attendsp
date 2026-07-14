@@ -12,7 +12,7 @@ export function AttendanceButton() {
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={() => setStep('gps')}
-        className="flex w-full max-w-sm items-center justify-center gap-4 rounded-[2rem] bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-5 text-white shadow-[0_20px_40px_rgba(37,99,235,0.24)] transition hover:shadow-[0_24px_48px_rgba(37,99,235,0.3)]"
+        className="flex w-full max-w-sm items-center justify-center gap-4 rounded-2xl bg-brand px-6 py-5 text-white shadow-lg shadow-brand/25 transition hover:bg-brand-600"
         aria-label="Mark Attendance"
       >
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20">
@@ -20,11 +20,11 @@ export function AttendanceButton() {
         </div>
         <div className="text-left">
           <div className="text-lg font-semibold">Mark attendance</div>
-          <div className="text-sm text-blue-100">Secure check-in with face and GPS</div>
+          <div className="text-sm text-white/80">Secure check-in with face and GPS</div>
         </div>
       </motion.button>
 
-      <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-500">
+      <div className="flex items-center gap-2 rounded-full border border-surface-border bg-white px-3 py-2 text-xs font-medium text-foreground-muted">
         <ShieldCheck className="h-4 w-4 text-emerald-600" />
         Camera and GPS access required
       </div>

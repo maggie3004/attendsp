@@ -39,13 +39,23 @@ export async function GET(req: Request) {
     }
 
     if (siteId) {
-      whereConditions.push({
-        employee: {
-          siteAssignments: {
-            some: { siteId, isActive: true },
+      if (siteId === 'unassigned') {
+        whereConditions.push({
+          employee: {
+            siteAssignments: {
+              none: { isActive: true },
+            },
           },
-        },
-      })
+        })
+      } else {
+        whereConditions.push({
+          employee: {
+            siteAssignments: {
+              some: { siteId, isActive: true },
+            },
+          },
+        })
+      }
     }
 
     if (status) {

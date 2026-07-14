@@ -55,9 +55,9 @@ export function LeavesPanel({ initialPending }: { initialPending: LeaveRequest[]
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="rounded-[1.5rem] border border-dashed border-slate-200 bg-white p-16 text-center text-slate-400 shadow-sm"
+            className="rounded-xl border border-dashed border-slate-200 bg-white p-16 text-center text-slate-500 shadow-sm"
           >
-            <CheckCircle2 className="w-10 h-10 text-emerald-400/50" />
+            <CheckCircle2 className="mx-auto mb-4 w-12 h-12 text-emerald-400/50" />
             <p>All caught up! No pending leave requests.</p>
           </motion.div>
         ) : (

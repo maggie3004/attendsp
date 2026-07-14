@@ -1,82 +1,87 @@
-import { formatTime, getStatusLabel } from '@/lib/utils'
-import { MapPin, Clock, ArrowRight } from 'lucide-react'
-import Link from 'next/link'
+import { timeAgo } from '@/lib/utils'
+import { Clock } from 'lucide-react'
 import type { AttendanceStatus } from '@prisma/client'
-import { StatusBadge } from '@/components/ui/DesignSystem'
-import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 
 interface RecentAttendanceProps {
   records: {
     id: string
     status: AttendanceStatus
     checkInTime: Date | null
+    checkOutTime?: Date | null
     user: { id: string; name: string; employeeId: string; profileImageUrl: string | null }
     site: { id: string; name: string; code: string } | null
   }[]
+  compact?: boolean
+}
+
+function getActivityBadge(status: AttendanceStatus, checkOutTime?: Date | null) {
+  if (status === 'ABSENT') {
+    return { label: 'ABSENT', className: 'bg-amber-100 text-amber-800 border-amber-300' }
+  }
+  if (checkOutTime) {
+    return { label: 'OUT', className: 'bg-red-100 text-red-800 border-red-300' }
+  }
+  return { label: 'IN', className: 'bg-emerald-100 text-emerald-800 border-emerald-300' }
+}
+
+function getActionText(record: RecentAttendanceProps['records'][0]) {
+  if (record.status === 'ABSENT') return 'Marked absent today'
+  if (record.checkOutTime) {
+    return `Checked out from ${record.site?.name ?? 'site'}`
+  }
+  if (record.checkInTime) {
+    return `Checked in at ${record.site?.name ?? 'site'}`
+  }
+  return record.site?.name ?? record.user.employeeId
 }
 
 export function RecentAttendance({ records }: RecentAttendanceProps) {
+  if (records.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+        <div className="rounded-full bg-surface p-3">
+          <Clock className="h-5 w-5 text-foreground-subtle" />
+        </div>
+        <p className="text-sm font-medium text-foreground-muted">No attendance activity yet</p>
+      </div>
+    )
+  }
+
   return (
-    <Card>
-      <CardHeader
-        title="Today's attendance feed"
-        description="Live check-ins from the field"
-        action={
-          <Link href="/admin/attendance" className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition hover:text-blue-700">
-            View all <ArrowRight className="h-4 w-4" />
-          </Link>
-        }
-      />
+    <div className="divide-y divide-surface-border">
+      {records.slice(0, 5).map((record) => {
+        const badge = getActivityBadge(record.status, record.checkOutTime)
+        const timestamp = record.checkOutTime ?? record.checkInTime
 
-      <CardContent className="p-0">
-        {records.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <div className="rounded-full bg-white p-4 shadow-sm">
-              <Clock className="h-6 w-6 text-slate-400" />
+        return (
+          <div
+            key={record.id}
+            className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
+          >
+            {record.user.profileImageUrl ? (
+              <img src={record.user.profileImageUrl} alt="" className="h-10 w-10 flex-shrink-0 rounded-full object-cover" />
+            ) : (
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-brand text-[12px] font-semibold text-white">
+                {(record.user.name || 'U').charAt(0).toUpperCase()}
+              </div>
+            )}
+
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[13px] font-semibold text-foreground">{record.user.name || 'Unknown'}</p>
+              <p className="truncate text-[11px] text-foreground-muted">{getActionText(record)}</p>
             </div>
-            <p className="text-sm font-semibold text-slate-700">No attendance activity yet</p>
-            <p className="max-w-xs text-sm text-slate-500">The latest field check-ins will appear here automatically.</p>
+
+            <div className="flex flex-shrink-0 items-center gap-2">
+              {timestamp && (
+                <span className="hidden text-[10px] text-foreground-subtle sm:inline">{timeAgo(timestamp)}</span>
+              )}
+              <span className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-bold tracking-wide ${badge.className}`}>
+                {badge.label}
+              </span>
+            </div>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {records.map((record) => {
-              const tone = record.status === 'PRESENT' || record.status === 'LATE' || record.status === 'HALF_DAY'
-                ? 'success'
-                : record.status === 'ABSENT'
-                  ? 'danger'
-                  : 'info'
-
-              return (
-                <div key={record.id} className="group flex items-center gap-4 rounded-[1.5rem] border border-slate-200/80 bg-white px-5 py-4 shadow-[0_10px_30px_rgba(15,23,42,0.06)] transition hover:bg-slate-50/80 hover:shadow-[0_14px_40px_rgba(15,23,42,0.1)]">
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-600 text-sm font-semibold text-white">
-                    {(record.user.name || 'U').charAt(0).toUpperCase()}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-col gap-1">
-                      <p className="truncate text-sm font-semibold text-slate-950">{record.user.name || 'Unknown'}</p>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                        <span>{record.user.employeeId}</span>
-                        {record.site && (
-                          <span className="inline-flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {record.site.name}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-2 text-right">
-                    <span className="text-xs uppercase tracking-[0.24em] text-slate-500">{record.checkInTime ? formatTime(record.checkInTime) : 'Pending'}</span>
-                    <StatusBadge label={getStatusLabel(record.status)} tone={tone} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        )
+      })}
+    </div>
   )
 }

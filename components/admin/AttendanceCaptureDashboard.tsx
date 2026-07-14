@@ -1,45 +1,86 @@
 'use client'
 
-import { Camera, MapPin, Zap, CircleCheckBig, ArrowRight } from 'lucide-react'
-import { StatsCard, SectionCard, InfoCard } from '@/components/ui/DesignSystem'
+import { Camera, MapPin, CircleCheckBig, Wifi, Users, Clock } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import type { ReactNode } from 'react'
 
-export function AttendanceCaptureDashboard({ stats }: { stats: { total:number; present:number; offlineQueue:number } }){
+function SummaryCard({
+  label,
+  value,
+  icon,
+  tone,
+  sub,
+}: {
+  label: string
+  value: number
+  icon: ReactNode
+  tone: string
+  sub: string
+}) {
   return (
-    <div className="space-y-6">
-      <SectionCard title="Attendance capture" description="Primary action area for the field team">
-        <div className="space-y-6">
-          <div className="rounded-[1.5rem] border border-slate-200/80 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <Card className="overflow-hidden rounded-2xl border-surface-border/60 shadow-sm">
+      <CardContent className="flex h-full flex-col p-5">
+        <div className="mb-4 flex items-center gap-3">
+          <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full ${tone} text-white`}>
+            {icon}
+          </div>
+          <div>
+            <p className="text-[13px] font-medium text-foreground-muted">{label}</p>
+            <p className="mt-0.5 text-[28px] font-bold leading-none tracking-tight text-foreground">{value}</p>
+          </div>
+        </div>
+        <p className="mt-auto pt-2 text-[12px] font-medium text-foreground-muted">{sub}</p>
+      </CardContent>
+    </Card>
+  )
+}
+
+export function AttendanceCaptureDashboard({ stats }: { stats: { total: number; present: number; absent: number; offlineQueue: number } }) {
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <SummaryCard label="Present" value={stats.present} icon={<CircleCheckBig className="h-[20px] w-[20px]" />} tone="bg-emerald-500" sub="Checked in today" />
+        <SummaryCard label="Absent" value={stats.absent} icon={<Users className="h-[20px] w-[20px]" />} tone="bg-red-500" sub="Not checked in" />
+        <SummaryCard label="Late" value={0} icon={<Clock className="h-[20px] w-[20px]" />} tone="bg-amber-500" sub="After threshold" />
+        <SummaryCard label="Offline Queue" value={stats.offlineQueue} icon={<Wifi className="h-[20px] w-[20px]" />} tone="bg-slate-500" sub="Pending sync" />
+      </div>
+
+      <Card>
+        <CardContent className="p-5">
+          <div className="mb-4">
+            <h3 className="text-[15px] font-bold text-foreground">Attendance Capture</h3>
+            <p className="mt-0.5 text-xs text-foreground-muted">Primary action area for the field team</p>
+          </div>
+          <div className="space-y-4">
+            <div className="flex flex-col gap-3 rounded-xl border border-surface-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-semibold text-slate-900">Live capture station</p>
-                <p className="mt-1 text-sm text-slate-500">Camera feed and sync controls for a fast field check-in experience.</p>
+                <p className="text-sm font-semibold text-foreground">Live capture station</p>
+                <p className="mt-0.5 text-xs text-foreground-muted">Camera feed and sync controls for field check-in.</p>
               </div>
-              <div className="inline-flex rounded-full bg-blue-50 px-3 py-1.5 text-sm font-semibold text-blue-700">Ready</div>
+              <span className="inline-flex w-fit rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Ready</span>
             </div>
-            <div className="mt-5 flex min-h-[180px] items-center justify-center rounded-[1.25rem] border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-500">
-              Camera feed placeholder
+
+            <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-dashed border-surface-border bg-surface text-sm text-foreground-subtle">
+              <div className="flex flex-col items-center gap-2">
+                <Camera className="h-8 w-8 text-foreground-subtle" />
+                Camera feed placeholder
+              </div>
             </div>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Button variant="primary" size="md">Capture Attendance</Button>
-              <Button variant="outline" size="md">Sync Now</Button>
+
+            <div className="flex flex-wrap gap-2.5">
+              <Button variant="primary" size="md">
+                <Camera className="h-4 w-4" />
+                Capture Attendance
+              </Button>
+              <Button variant="outline" size="md">
+                <MapPin className="h-4 w-4" />
+                Sync Now
+              </Button>
             </div>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <StatsCard label="Workers" value={stats.total} icon={<Zap className="h-5 w-5 text-blue-600" />} accent="text-blue-600" tone="bg-blue-50" />
-            <StatsCard label="Present" value={stats.present} icon={<CircleCheckBig className="h-5 w-5 text-emerald-600" />} accent="text-emerald-600" tone="bg-emerald-50" />
-            <StatsCard label="Offline queue" value={stats.offlineQueue} icon={<MapPin className="h-5 w-5 text-amber-600" />} accent="text-amber-600" tone="bg-amber-50" />
-          </div>
-        </div>
-      </SectionCard>
-
-      <SectionCard title="Recent operations" description="At-a-glance monitoring">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <InfoCard title="Present" description="Checked in today" value={stats.present} icon={<CircleCheckBig className="h-4 w-4 text-slate-400" />} />
-          <InfoCard title="Pending sync" description="Needs upload" value={stats.offlineQueue} icon={<MapPin className="h-4 w-4 text-slate-400" />} />
-        </div>
-      </SectionCard>
+        </CardContent>
+      </Card>
     </div>
   )
 }

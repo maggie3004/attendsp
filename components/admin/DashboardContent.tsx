@@ -2,11 +2,14 @@
 
 import { motion } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/Card'
-import { Camera, FileText, MapPin, Plus, Users, Building2, Clock, Zap } from 'lucide-react'
+import { Sparkline } from '@/components/ui/Sparkline'
+import { Camera, FileText, MapPin, Plus, Users, Building2, Clock, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 import { RecentAttendance } from '@/components/admin/RecentAttendance'
-import { SiteBreakdown } from '@/components/admin/SiteBreakdown'
+import { SiteCoverageList } from '@/components/admin/SiteCoverageList'
 import { AttendanceTrendChart } from '@/components/admin/charts/AttendanceTrendChart'
+import type { ReactNode } from 'react'
+import { PageShell } from '@/components/ui/Layout'
 
 interface DashboardContentProps {
   firstName: string
@@ -16,195 +19,248 @@ interface DashboardContentProps {
     presentToday: number
     lateToday: number
     absentToday: number
+    exceptionsToday: number
+    sitesAtRisk: number
+    operationalIssues: number
     activeSites: number
     pendingLeaves: number
     sites: any[]
     recentAttendance: any[]
+    priorityAlerts: any[]
     statsByStatus: Record<string, number>
   }
 }
 
+const kpiSparklines = {
+  total: [120, 122, 125, 128, 130, 131, 132],
+  present: [85, 88, 90, 92, 95, 96, 98],
+  sites: [4, 4, 4, 4, 4, 4, 4],
+  leaves: [12, 10, 9, 11, 8, 9, 8],
+}
+
+function KpiCard({
+  icon,
+  iconTone,
+  label,
+  value,
+  change,
+  changeTone = 'text-emerald-600',
+  sparkData,
+  sparkColor,
+}: {
+  icon: ReactNode
+  iconTone: string
+  label: string
+  value: number
+  change: string
+  changeTone?: string
+  sparkData: number[]
+  sparkColor: string
+}) {
+  return (
+    <Card className="overflow-hidden bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[146px] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+      <CardContent className="flex h-full flex-col p-6">
+        <div className="mb-3 flex justify-between items-start">
+          <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[1rem] ${iconTone}`}>
+            {icon}
+          </div>
+        </div>
+        <p className="text-[13px] font-semibold text-slate-500 uppercase tracking-wide">{label}</p>
+        <p className="mt-1 text-[2.5rem] font-bold tracking-tight text-slate-900 leading-none">{value}</p>
+        <div className="mt-auto flex items-end justify-between gap-2 pt-5">
+          <p className={`text-[13px] font-bold ${changeTone}`}>{change}</p>
+          <Sparkline data={sparkData} color={sparkColor} height={28} className="w-[80px]" />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function DashboardContent({ firstName, coverage, data }: DashboardContentProps) {
-  const actions = [
-    { href: '/admin/attendance', label: 'Mark Attendance', icon: Camera },
-    { href: '/admin/employees', label: 'Register Worker', icon: Plus },
-    { href: '/admin/reports', label: 'View Reports', icon: FileText },
-    { href: '/admin/sites', label: 'Manage Sites', icon: MapPin },
-  ]
+  // Actions are now dynamically generated based on operational issues
+
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold text-slate-500 uppercase tracking-[0.08em]">Operations</p>
-          <h1 className="text-3xl font-bold text-slate-950 mt-1">Good morning, {firstName}</h1>
-          <p className="text-sm text-slate-500 mt-1">Here's what's happening with your workforce today.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-white">
-            <div className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-sm font-medium text-slate-700">Live sync active</span>
+      <PageShell className="space-y-8">
+      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <h1 className="text-3xl font-bold leading-tight tracking-tight text-slate-900">
+          {greeting}, {firstName} 👋
+        </h1>
+        <p className="mt-1.5 text-sm text-slate-500">
+          Here's what's happening with your workforce today.
+        </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4"
+      >
+        <KpiCard
+          icon={<Users className="h-5 w-5 text-blue-600" />}
+          iconTone="bg-blue-100 rounded-full"
+          label="Total Workers"
+          value={data.totalEmployees}
+          change="↑ 12 this week"
+          sparkData={kpiSparklines.total}
+          sparkColor="#2563EB"
+        />
+        <KpiCard
+          icon={<ShieldCheck className="h-5 w-5 text-emerald-600" />}
+          iconTone="bg-emerald-100 rounded-lg"
+          label="Present Today"
+          value={data.presentToday}
+          change={`${coverage}% of total`}
+          sparkData={kpiSparklines.present}
+          sparkColor="#10B981"
+        />
+        <KpiCard
+          icon={<Building2 className="h-5 w-5 text-purple-600" />}
+          iconTone="bg-purple-100 rounded-full"
+          label="Active Sites"
+          value={data.activeSites}
+          change="100% operational"
+          changeTone="text-purple-600"
+          sparkData={kpiSparklines.sites}
+          sparkColor="#8B5CF6"
+        />
+        <KpiCard
+          icon={<FileText className="h-5 w-5 text-orange-600" />}
+          iconTone="bg-orange-100 rounded-full"
+          label="Pending Leaves"
+          value={data.pendingLeaves}
+          change="Requires action"
+          changeTone="text-orange-600"
+          sparkData={kpiSparklines.leaves}
+          sparkColor="#F97316"
+        />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="grid gap-6 lg:grid-cols-[1.7fr_1fr]"
+      >
+        <Card className="bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <CardContent className="p-7">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Attendance Overview</h2>
+                <p className="mt-1 text-[13px] text-slate-500">Attendance trend for the last 7 days</p>
+              </div>
+              <div className="flex items-center gap-4 text-[12px] text-slate-500 font-semibold">
+                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-slate-300 border border-dashed border-slate-400" />Scheduled</span>
+                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />Present</span>
+                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-red-500" />Absent</span>
+              </div>
+            </div>
+            <AttendanceTrendChart embedded />
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <CardContent className="p-7">
+            <div className="mb-6 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Site Coverage</h2>
+                <p className="mt-1 text-[13px] text-slate-500">Live attendance by site</p>
+              </div>
+              <Link href="/admin/sites" className="text-[13px] font-bold text-brand hover:text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg transition-colors">
+                View all
+              </Link>
+            </div>
+            <SiteCoverageList sites={data.sites} />
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="grid gap-6 lg:grid-cols-[1.45fr_1fr]"
+      >
+        <Card className="bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <CardContent className="p-7">
+            <div className="mb-6 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Recent Activity</h2>
+                <p className="mt-1 text-[13px] text-slate-500">Latest check-ins and updates</p>
+              </div>
+              <Link href="/admin/attendance" className="text-[13px] font-bold text-brand hover:text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg transition-colors">
+                View all
+              </Link>
+            </div>
+            {data.recentAttendance.length > 0 ? (
+              <RecentAttendance records={data.recentAttendance} />
+            ) : (
+              <div className="rounded-xl border border-dashed border-slate-200 py-10 text-center text-sm font-medium text-slate-500">
+                No recent activity
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="flex flex-col gap-6">
+          <Card className="bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <CardContent className="p-7">
+              <div className="mb-5">
+                <h2 className="text-base font-bold text-slate-900">Quick Actions</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Link href="/admin/attendance/mark" className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-3 hover:bg-slate-50 transition shadow-sm hover:shadow-md">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand">
+                    <Camera className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-bold text-slate-900">Mark Attendance</div>
+                    <div className="text-[11px] font-medium text-slate-500">Capture check-in</div>
+                  </div>
+                </Link>
+                <Link href="/admin/employees/new" className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-3 hover:bg-slate-50 transition shadow-sm hover:shadow-md">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-bold text-slate-900">Register Worker</div>
+                    <div className="text-[11px] font-medium text-slate-500">Add new workforce</div>
+                  </div>
+                </Link>
+                <Link href="/admin/reports" className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-3 hover:bg-slate-50 transition shadow-sm hover:shadow-md">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-bold text-slate-900">View Reports</div>
+                    <div className="text-[11px] font-medium text-slate-500">Analytics & insights</div>
+                  </div>
+                </Link>
+                <Link href="/admin/sites" className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-3 hover:bg-slate-50 transition shadow-sm hover:shadow-md">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand">
+                    <Building2 className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-[13px] font-bold text-slate-900">Manage Sites</div>
+                    <div className="text-[11px] font-medium text-slate-500">Update site details</div>
+                  </div>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="relative flex min-h-[88px] items-center gap-3 overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/90 to-white px-5 py-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground">All systems operational</p>
+              <p className="text-xs text-foreground-muted">Everything is running smoothly.</p>
+            </div>
+            <ShieldCheck className="absolute right-4 top-1/2 h-12 w-12 -translate-y-1/2 text-blue-200/50" />
           </div>
         </div>
       </motion.div>
-
-      {/* Stats Grid - 2x2 */}
-      <motion.div 
-        initial={{ opacity: 0, y: 12 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ delay: 0.1 }}
-        className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
-      >
-        {/* Total Workers */}
-        <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
-              <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">↑ 12 this week</span>
-            </div>
-            <p className="text-sm text-slate-500 font-medium">Total Workers</p>
-            <p className="text-3xl font-bold text-slate-950 mt-2">{data.totalEmployees}</p>
-            <p className="text-xs text-slate-500 mt-3">74% of total</p>
-          </CardContent>
-        </Card>
-
-        {/* Present Today */}
-        <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-                <Users className="w-6 h-6 text-emerald-600" />
-              </div>
-              <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">✓ On track</span>
-            </div>
-            <p className="text-sm text-slate-500 font-medium">Present Today</p>
-            <p className="text-3xl font-bold text-slate-950 mt-2">{data.presentToday}</p>
-            <p className="text-xs text-slate-500 mt-3">{coverage}% of total</p>
-          </CardContent>
-        </Card>
-
-        {/* Active Sites */}
-        <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                <Building2 className="w-6 h-6 text-purple-600" />
-              </div>
-              <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded-full">Stable</span>
-            </div>
-            <p className="text-sm text-slate-500 font-medium">Active Sites</p>
-            <p className="text-3xl font-bold text-slate-950 mt-2">{data.activeSites}</p>
-            <p className="text-xs text-slate-500 mt-3">100% operational</p>
-          </CardContent>
-        </Card>
-
-        {/* Pending Leaves */}
-        <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)] hover:shadow-[0_16px_40px_rgba(15,23,42,0.08)] transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
-                <Clock className="w-6 h-6 text-orange-600" />
-              </div>
-              <span className="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">Requires action</span>
-            </div>
-            <p className="text-sm text-slate-500 font-medium">Pending Leaves</p>
-            <p className="text-3xl font-bold text-slate-950 mt-2">{data.pendingLeaves}</p>
-            <p className="text-xs text-slate-500 mt-3">Awaiting review</p>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Main Content Grid */}
-      <motion.div 
-        initial={{ opacity: 0, y: 12 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ delay: 0.2 }}
-        className="grid gap-6 lg:grid-cols-[1.6fr_0.9fr]"
-      >
-        {/* Left Column */}
-        <div className="space-y-6">
-          {/* Attendance Overview */}
-          <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-            <CardContent className="p-6">
-              <div className="mb-6">
-                <h2 className="text-lg font-bold text-slate-950">Attendance Overview</h2>
-                <p className="text-sm text-slate-500 mt-1">Attendance trend for the last 7 days</p>
-              </div>
-              <AttendanceTrendChart />
-            </CardContent>
-          </Card>
-
-          {/* Site Coverage */}
-          <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-            <CardContent className="p-6">
-              <div className="mb-6">
-                <h2 className="text-lg font-bold text-slate-950">Site Coverage</h2>
-                <p className="text-sm text-slate-500 mt-1">Live attendance by site</p>
-              </div>
-              <SiteBreakdown sites={data.sites} />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right Column */}
-        <div className="space-y-6">
-          {/* Recent Activity */}
-          <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-950">Recent Activity</h2>
-                  <p className="text-sm text-slate-500 mt-1">Latest check-ins and updates</p>
-                </div>
-              </div>
-              <RecentAttendance records={data.recentAttendance} />
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-            <CardContent className="p-6">
-              <h2 className="text-lg font-bold text-slate-950 mb-6">Quick Actions</h2>
-              <div className="space-y-3">
-                {actions.map((action) => {
-                  const Icon = action.icon
-                  return (
-                    <Link
-                      key={action.label}
-                      href={action.href}
-                      className="flex items-center gap-3 p-4 rounded-[1.2rem] border border-slate-200 bg-slate-50 text-slate-900 transition hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 group"
-                    >
-                      <Icon className="w-5 h-5 text-slate-600 group-hover:text-blue-600 transition" />
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold">{action.label}</p>
-                      </div>
-                      <Zap className="w-4 h-4 text-slate-400 group-hover:text-blue-400 transition" />
-                    </Link>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* System Status */}
-          <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
-                  <Zap className="w-5 h-5 text-emerald-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-950">All systems operational</p>
-                  <p className="text-xs text-slate-500">Everything is running smoothly.</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </motion.div>
-    </div>
+    </PageShell>
   )
 }

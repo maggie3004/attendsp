@@ -18,18 +18,19 @@ interface TrendData {
   present: number
   late: number
   absent: number
+  scheduled: number
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
   if (active && payload?.length) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-lg">
-        <div className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">{label}</div>
-        {payload.map((entry: any) => (
+      <div className="rounded-xl border border-surface-border bg-white px-4 py-3 text-sm shadow-card">
+        <div className="mb-2 text-xs font-semibold text-foreground-muted">{label}</div>
+        {payload.map((entry) => (
           <div key={entry.name} className="flex items-center gap-2">
-            <div className="h-2.5 w-2.5 rounded-full" style={{ background: entry.color }} />
-            <span className="capitalize text-slate-600">{entry.name}:</span>
-            <span className="font-semibold text-slate-900">{entry.value}</span>
+            <div className="h-2 w-2 rounded-full" style={{ background: entry.color || entry.stroke }} />
+            <span className="capitalize text-foreground-muted">{entry.name}:</span>
+            <span className="font-semibold text-foreground">{entry.value}</span>
           </div>
         ))}
       </div>
@@ -38,7 +39,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null
 }
 
-export function AttendanceTrendChart() {
+export function AttendanceTrendChart({ embedded = false }: { embedded?: boolean }) {
   const [data, setData] = useState<TrendData[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -47,73 +48,63 @@ export function AttendanceTrendChart() {
       .then((r) => r.json())
       .then((d) => { setData(d.data ?? []); setIsLoading(false) })
       .catch(() => {
-        const placeholder = Array.from({ length: 7 }, (_, i) => ({
-          date: format(subDays(new Date(), 6 - i), 'dd MMM'),
-          present: Math.floor(Math.random() * 30 + 60),
-          late: Math.floor(Math.random() * 15),
-          absent: Math.floor(Math.random() * 10),
-        }))
+        const placeholder = Array.from({ length: 7 }, (_, i) => {
+          const scheduled = Math.floor(Math.random() * 20 + 80)
+          return {
+            date: format(subDays(new Date(), 6 - i), 'dd MMM'),
+            present: Math.floor(scheduled * (Math.random() * 0.2 + 0.7)),
+            late: Math.floor(scheduled * 0.1),
+            absent: Math.floor(scheduled * 0.1),
+            scheduled,
+          }
+        })
         setData(placeholder)
         setIsLoading(false)
       })
   }, [])
 
+  if (isLoading) {
+    return <div className="h-48 rounded-xl shimmer" />
+  }
+
+  const chart = (
+    <ResponsiveContainer width="100%" height={embedded ? 260 : 224}>
+      <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+        <defs>
+          <linearGradient id="presentGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#10B981" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="absentGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#EF4444" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+        <XAxis dataKey="date" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
+        <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={false} tickLine={false} />
+        <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#e2e8f0', strokeWidth: 1 }} />
+        {!embedded && (
+          <Legend wrapperStyle={{ fontSize: '12px', color: '#64748b', paddingTop: '12px' }} iconType="circle" iconSize={8} />
+        )}
+        <Area type="monotone" dataKey="scheduled" stroke="#94A3B8" fill="none" strokeWidth={2} strokeDasharray="5 5" />
+        <Area type="linear" dataKey="present" stroke="#10B981" fill="url(#presentGrad)" strokeWidth={2} dot={{ r: 3, fill: '#10B981', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+        <Area type="linear" dataKey="absent" stroke="#EF4444" fill="url(#absentGrad)" strokeWidth={2} dot={{ r: 3, fill: '#EF4444', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+      </AreaChart>
+    </ResponsiveContainer>
+  )
+
+  if (embedded) return chart
+
   return (
-      <div className="card p-6">
+    <div className="card p-6">
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Weekly attendance overview</h2>
-          <p className="mt-0.5 text-sm text-slate-500">Present, late, and missed shifts across the week</p>
+          <h2 className="text-lg font-semibold text-foreground">Weekly attendance overview</h2>
+          <p className="mt-0.5 text-sm text-foreground-muted">Present and absent shifts across the week</p>
         </div>
-        <div className="rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700">Updated hourly</div>
       </div>
-
-      {isLoading ? (
-        <div className="h-56 rounded-2xl shimmer" />
-      ) : (
-        <div className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Best day</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">Mon</p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Peak present</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">92 workers</p>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">Avg. late</p>
-              <p className="mt-1 text-lg font-semibold text-slate-900">6 workers</p>
-            </div>
-          </div>
-          <ResponsiveContainer width="100%" height={224}>
-            <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="presentGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#16a34a" stopOpacity={0.16} />
-                  <stop offset="95%" stopColor="#16a34a" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="lateGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.16} />
-                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="absentGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#dc2626" stopOpacity={0.16} />
-                  <stop offset="95%" stopColor="#dc2626" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-              <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#d1d5db', strokeWidth: 1 }} />
-              <Legend wrapperStyle={{ fontSize: '12px', color: '#6b7280', paddingTop: '12px' }} iconType="circle" iconSize={8} />
-              <Area type="monotone" dataKey="present" stroke="#16a34a" fill="url(#presentGrad)" strokeWidth={2} dot={false} />
-              <Area type="monotone" dataKey="late" stroke="#f59e0b" fill="url(#lateGrad)" strokeWidth={2} dot={false} />
-              <Area type="monotone" dataKey="absent" stroke="#dc2626" fill="url(#absentGrad)" strokeWidth={2} dot={false} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      {chart}
     </div>
   )
 }

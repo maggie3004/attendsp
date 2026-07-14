@@ -1,29 +1,81 @@
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/db'
 import { format } from 'date-fns'
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+import type { AttendanceStatus } from '@prisma/client'
+import { PageShell } from '@/components/ui/Layout'
+import { EmptyState, PageHeader, SectionCard, StatusBadge } from '@/components/ui/DesignSystem'
+import { Button } from '@/components/ui/Button'
+import { getStatusLabel } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Employee History' }
 
-export default async function EmployeeHistoryPage({ params }: { params: { id: string } }) {
-  const records = await prisma.attendanceRecord.findMany({ where: { userId: params.id }, orderBy: { date: 'desc' }, include: { site: { select: { name: true } } }, take: 50 })
+function statusTone(status: AttendanceStatus): 'success' | 'warning' | 'danger' | 'info' | 'neutral' {
+  if (status === 'PRESENT') return 'success'
+  if (['LATE', 'HALF_DAY'].includes(status)) return 'warning'
+  if (status === 'ABSENT') return 'danger'
+  if (status === 'LEAVE') return 'info'
+  return 'neutral'
+}
+
+export default async function EmployeeHistoryPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const [user, records] = await Promise.all([
+    prisma.user.findUnique({ where: { id: id }, select: { name: true, employeeId: true } }),
+    prisma.attendanceRecord.findMany({
+      where: { userId: id },
+      orderBy: { date: 'desc' },
+      include: { site: { select: { name: true } } },
+      take: 50,
+    }),
+  ])
 
   return (
-    <div className="p-6 space-y-6 animate-fade-in">
-      <div className="rounded-[1.5rem] border border-slate-200/80 bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
-        <h1 className="text-2xl font-bold mb-3 text-slate-900">Attendance history</h1>
-        {records.length === 0 ? (
-          <div className="rounded-[1.25rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-slate-500">No records</div>
-        ) : (
-          <div className="space-y-3">
-            {records.map(r => (
-              <div key={r.id} className="rounded-[1rem] border border-slate-200 bg-slate-50 p-4">
-                <div className="text-sm font-semibold text-slate-900">{format(new Date(r.date), 'dd MMM yyyy')}</div>
-                <div className="text-xs text-slate-500">Status: {r.status} {r.site ? `• ${r.site.name}` : ''}</div>
-              </div>
-            ))}
-          </div>
-        )}
+    <PageShell>
+      <div className="space-y-6 animate-fade-in">
+        <PageHeader
+          eyebrow="Workforce roster"
+          title="Attendance history"
+          description={user ? `${user.name} · ${user.employeeId}` : 'Last 50 records'}
+          action={
+            <Link href={`/admin/employees/${id}`}>
+              <Button variant="outline" size="sm">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Profile
+              </Button>
+            </Link>
+          }
+        />
+
+        <SectionCard title="Recent records" description="Chronological attendance log">
+          {records.length === 0 ? (
+            <EmptyState
+              title="No attendance records"
+              description="This worker has no check-in history yet."
+            />
+          ) : (
+            <div className="space-y-3">
+              {records.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex items-center justify-between gap-4 rounded-xl border border-surface-border bg-surface px-4 py-3"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {format(new Date(r.date), 'dd MMM yyyy')}
+                    </p>
+                    {r.site && (
+                      <p className="mt-0.5 text-xs text-foreground-muted">{r.site.name}</p>
+                    )}
+                  </div>
+                  <StatusBadge label={getStatusLabel(r.status)} tone={statusTone(r.status)} />
+                </div>
+              ))}
+            </div>
+          )}
+        </SectionCard>
       </div>
-    </div>
+    </PageShell>
   )
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/db'
 import { AuditLogTable } from '@/components/admin/audit/AuditLogTable'
+import { PageShell } from '@/components/ui/Layout'
+import { PageHeader } from '@/components/ui/DesignSystem'
 
 export const metadata: Metadata = { title: 'Audit Logs' }
 
@@ -15,12 +17,15 @@ export default async function AuditPage() {
   })
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="rounded-[1.5rem] border border-slate-200/80 bg-white p-6 shadow-[0_12px_36px_rgba(15,23,42,0.06)]">
-        <h1 className="text-2xl font-semibold text-slate-900">Audit Logs</h1>
-        <p className="text-sm text-slate-500 mt-1">Immutable record of all system actions — last 100 entries</p>
+    <PageShell>
+      <div className="space-y-6 animate-fade-in">
+        <PageHeader
+          eyebrow="System activity"
+          title="Audit Logs"
+          description="Immutable record of all system actions — last 100 entries."
+        />
+        <AuditLogTable logs={logs} />
       </div>
-      <AuditLogTable logs={logs} />
-    </div>
+    </PageShell>
   )
 }

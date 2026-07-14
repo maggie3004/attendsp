@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { startOfDay, endOfDay } from 'date-fns'
 import { WorkerAttendanceFlow } from '@/components/worker/attendance/WorkerAttendanceFlow'
-import { motion } from 'framer-motion'
 
 export default async function WorkerAttendancePage() {
   const session = await auth()

@@ -17,7 +17,7 @@ export default async function EmployeesPage() {
           description="Manage workforce profiles, face registrations, and account status from one operational workspace."
           action={
             <Link href="/admin/employees/new">
-              <Button variant="primary" size="md">+ Add Worker</Button>
+              <Button variant="primary" size="md" className="shadow-lg shadow-brand/25 rounded-xl font-semibold px-5">+ Add Worker</Button>
             </Link>
           }
         />

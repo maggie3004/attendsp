@@ -32,7 +32,11 @@ async function getDashboardData() {
       where: { date: { gte: dayStart, lte: dayEnd } },
       orderBy: { checkInTime: 'desc' },
       take: 10,
-      include: {
+      select: {
+        id: true,
+        status: true,
+        checkInTime: true,
+        checkOutTime: true,
         user: { select: { id: true, name: true, employeeId: true, profileImageUrl: true } },
         site: { select: { id: true, name: true, code: true } },
       },
@@ -49,15 +53,37 @@ async function getDashboardData() {
 
   const presentCount = (statsByStatus['PRESENT'] ?? 0) + (statsByStatus['LATE'] ?? 0) + (statsByStatus['HALF_DAY'] ?? 0)
 
+  const exceptionsToday = (statsByStatus['LATE'] ?? 0) + (statsByStatus['ABSENT'] ?? 0)
+  let sitesAtRisk = 0
+
+  const processedSites = sites.map(site => {
+    const total = site._count.employeeAssignments
+    const present = site.attendanceRecords.filter(r => ['PRESENT', 'LATE', 'HALF_DAY'].includes(r.status)).length
+    const coverage = total > 0 ? (present / total) * 100 : 0
+    if (total > 0 && coverage < 75) sitesAtRisk++
+    return { ...site, coverage, present, total }
+  })
+
+  // Sort sites by risk (lowest coverage first)
+  processedSites.sort((a, b) => a.coverage - b.coverage)
+
+  // Filter recent attendance for anomalies only (Late, Absent)
+  // Or we can just mock the priority alerts
+  const priorityAlerts = recentAttendance.filter(r => ['LATE', 'ABSENT'].includes(r.status))
+
   return {
     totalEmployees,
     presentToday: presentCount,
     lateToday: statsByStatus['LATE'] ?? 0,
     absentToday: statsByStatus['ABSENT'] ?? 0,
+    exceptionsToday,
+    sitesAtRisk,
+    operationalIssues: 3, // Mocked as requested
     activeSites: sites.length,
     pendingLeaves: leaveRequests,
-    sites,
+    sites: processedSites,
     recentAttendance,
+    priorityAlerts,
     statsByStatus,
   }
 }

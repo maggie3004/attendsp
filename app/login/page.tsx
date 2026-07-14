@@ -6,8 +6,12 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, EyeOff, Loader2, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, Loader2, ShieldCheck, HardHat } from 'lucide-react'
 import { loginSchema, type LoginInput } from '@/lib/validations'
+import { Card, CardContent } from '@/components/ui/Card'
+import { FormField, Input } from '@/components/ui/Form'
+import { Button } from '@/components/ui/Button'
+import { cn } from '@/lib/utils'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -52,101 +56,109 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-[radial-gradient(circle_at_top,_#f8fbff_0%,_#ffffff_55%)] p-4">
-      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: 'easeOut' }} className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-blue-500 shadow-[0_16px_40px_rgba(37,99,235,0.24)]">
+    <div className="flex min-h-dvh items-center justify-center bg-slate-50 p-4">
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className="w-full max-w-md"
+      >
+        {/* Brand */}
+        <div className="mb-10 text-center">
+          <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 shadow-sm">
             <ShieldCheck className="h-7 w-7 text-white" />
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Attend<span className="text-blue-600">SP</span></h1>
-          <p className="mt-1 text-sm text-slate-500">Construction workforce attendance platform</p>
+          <h1 className="text-4xl font-bold tracking-tight text-slate-900">
+            AttendSP
+          </h1>
+          <p className="mt-3 text-sm text-slate-500">
+            Workforce Attendance & Site Operations Platform
+          </p>
         </div>
 
-        {/* Card */}
-        <div className="card p-6 shadow-[0_16px_50px_rgba(15,23,42,0.08)]">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Employee ID */}
-            <div className="space-y-1.5">
-              <label htmlFor="employeeId" className="text-sm font-medium text-slate-700">
-                Employee ID
-              </label>
-              <input
-                id="employeeId"
-                type="text"
-                placeholder="EMP-0001"
-                autoComplete="username"
-                autoFocus
-                className={`w-full rounded-2xl border bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all ${errors.employeeId ? 'border-rose-400' : 'border-slate-200'}`}
-                {...register('employeeId')}
-              />
-              {errors.employeeId && (
-                <p className="text-xs text-red-500">{errors.employeeId.message}</p>
-              )}
-            </div>
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-lg overflow-hidden">
+          <div className="p-8">
 
-            {/* PIN */}
-            <div className="space-y-1.5">
-              <label htmlFor="pin" className="text-sm font-medium text-slate-700">
-                PIN
-              </label>
-              <div className="relative">
-                <input
-                  id="pin"
-                  type={showPin ? 'text' : 'password'}
-                  placeholder="Enter your PIN"
-                  autoComplete="current-password"
-                  inputMode="numeric"
-                  maxLength={6}
-                  className={`w-full rounded-2xl border bg-white px-4 py-3 pr-12 text-base tracking-widest text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all ${errors.pin ? 'border-rose-400' : 'border-slate-200'}`}
-                  {...register('pin')}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <FormField label="Employee ID">
+                <Input
+                  id="employeeId"
+                  type="text"
+                  placeholder="EMP-0001"
+                  autoComplete="username"
+                  autoFocus
+                  className={cn("h-12 w-full px-4 rounded-xl border border-slate-300 bg-white text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20", errors.employeeId && 'border-red-300 focus:border-red-400 focus:ring-red-500/10')}
+                  {...register('employeeId')}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPin(!showPin)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
-                >
-                  {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-              {errors.pin && (
-                <p className="text-xs text-red-500">{errors.pin.message}</p>
-              )}
-            </div>
+                {errors.employeeId && (
+                  <p className="text-xs text-red-600">{errors.employeeId.message}</p>
+                )}
+              </FormField>
 
-            {/* Error */}
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600"
-                >
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <FormField label="PIN">
+                <div className="relative">
+                  <Input
+                    id="pin"
+                    type={showPin ? 'text' : 'password'}
+                    placeholder="Enter your PIN"
+                    autoComplete="current-password"
+                    inputMode="numeric"
+                    maxLength={6}
+                    className={cn(
+                      'h-12 w-full px-4 pr-12 rounded-xl border border-slate-300 bg-white text-sm tracking-widest focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20',
+                      errors.pin && 'border-red-300 focus:border-red-400 focus:ring-red-500/10'
+                    )}
+                    {...register('pin')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPin(!showPin)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600"
+                    aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
+                  >
+                    {showPin ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {errors.pin && (
+                  <p className="text-xs text-red-600">{errors.pin.message}</p>
+                )}
+              </FormField>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 py-3.5 text-base font-semibold text-white shadow-[0_16px_40px_rgba(37,99,235,0.24)] transition hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </form>
+              <AnimatePresence>
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+                  >
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex h-12 w-full items-center justify-center rounded-xl bg-blue-600 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </button>
+            </form>
+          </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-slate-400">Multi-site attendance tracking for modern construction teams</p>
+        <p className="mt-6 text-center text-xs text-foreground-subtle">
+          Secure face + GPS verified attendance
+        </p>
       </motion.div>
     </div>
   )

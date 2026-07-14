@@ -9,12 +9,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (session.user.role === 'WORKER') redirect('/worker/attendance')
 
   return (
-    <div className="flex min-h-dvh overflow-hidden bg-slate-50">
+    <div className="flex min-h-dvh overflow-hidden bg-surface">
       <AdminSidebar />
-
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden" style={{ paddingLeft: 'var(--sidebar-current-width, 0px)' }}>
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <AdminTopbar user={session.user} />
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto bg-slate-50">
           {children}
         </main>
       </div>

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { prisma } from '@/lib/db'
 import { SettingsForm } from '@/components/admin/settings/SettingsForm'
+import { PageShell } from '@/components/ui/Layout'
+import { PageHeader } from '@/components/ui/DesignSystem'
 
 export const metadata: Metadata = { title: 'Settings' }
 
@@ -27,12 +29,15 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500 mt-0.5">Configure attendance rules, thresholds, and company preferences</p>
+    <PageShell>
+      <div className="space-y-6 animate-fade-in">
+        <PageHeader
+          eyebrow="Configuration"
+          title="Settings"
+          description="Configure attendance rules, thresholds, and company preferences."
+        />
+        <SettingsForm settings={settings} />
       </div>
-      <SettingsForm settings={settings} />
-    </div>
+    </PageShell>
   )
 }

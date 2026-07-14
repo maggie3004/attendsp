@@ -40,16 +40,16 @@ export function GpsStep() {
   return (
     <div className="card flex flex-col items-center gap-6 p-6 text-center sm:p-8">
       <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">1</div>
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">1</div>
         <span>Verifying your location</span>
       </div>
 
       <motion.div
         animate={status === 'acquiring' ? { scale: [1, 1.06, 1] } : {}}
         transition={{ repeat: Infinity, duration: 1.5 }}
-        className={cn('flex h-20 w-20 items-center justify-center rounded-full', status === 'acquiring' && 'bg-blue-50', status === 'success' && 'bg-emerald-50', status === 'error' && 'bg-rose-50')}
+        className={cn('flex h-20 w-20 items-center justify-center rounded-full', status === 'acquiring' && 'bg-brand/10', status === 'success' && 'bg-emerald-50', status === 'error' && 'bg-rose-50')}
       >
-        {status === 'acquiring' && <Loader2 className="h-8 w-8 animate-spin text-blue-600" />}
+        {status === 'acquiring' && <Loader2 className="h-8 w-8 animate-spin text-brand" />}
         {status === 'success' && <CheckCircle2 className="h-8 w-8 text-emerald-600" />}
         {status === 'error' && <AlertCircle className="h-8 w-8 text-rose-600" />}
       </motion.div>

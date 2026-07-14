@@ -6,5 +6,9 @@ export const metadata: Metadata = {
 }
 
 export default function LoginLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return (
+    <div className="min-h-dvh bg-surface">
+      {children}
+    </div>
+  )
 }

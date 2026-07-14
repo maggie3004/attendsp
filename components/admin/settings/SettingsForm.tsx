@@ -77,7 +77,7 @@ export function SettingsForm({ settings }: Props) {
   const inputClass = "bg-white border border-slate-200 rounded-[1rem] px-3 py-3 text-sm text-slate-900 w-32 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 text-right"
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-2xl">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
       <SettingSection title="Company Info" icon={Building}>
         <Field label="Company Name">
           <input {...register('companyName')} className={inputClass} style={{ width: 200 }} />

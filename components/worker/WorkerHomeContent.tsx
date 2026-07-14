@@ -2,8 +2,11 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Camera, Calendar, CheckCircle2, Clock } from 'lucide-react'
+import { Camera, Calendar, CheckCircle2, Clock, PalmtreeIcon } from 'lucide-react'
 import { format } from 'date-fns'
+import { Card, CardContent } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
+import { StatusBadge } from '@/components/ui/DesignSystem'
 
 interface WorkerHomeContentProps {
   firstName: string
@@ -20,191 +23,174 @@ interface WorkerHomeContentProps {
     absentDays: number
     pendingLeaves: number
   }
-  approvalLeaves: any[]
-  recentRecords: any[]
+  approvalLeaves: { id: string }[]
+  recentRecords: {
+    id: string
+    status: string
+    checkInTime?: Date | null
+    checkOutTime?: Date | null
+    site?: { name: string } | null
+  }[]
+}
+
+function dotColor(status: string, hasCheckout?: boolean) {
+  if (status === 'ABSENT') return 'bg-red-500'
+  if (hasCheckout) return 'bg-amber-500'
+  return 'bg-emerald-500'
 }
 
 export function WorkerHomeContent({
-  firstName,
-  date,
   todayAttendance,
   stats,
   approvalLeaves,
-  recentRecords
+  recentRecords,
 }: WorkerHomeContentProps) {
   return (
-    <div className="min-h-dvh bg-slate-50 pb-6">
-      <div className="px-4 space-y-4 pt-6">
-        {/* Today's Status */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm"
-        >
-          <h2 className="text-sm font-bold text-slate-900 mb-3">Today's Status</h2>
-          {todayAttendance ? (
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-              </div>
+    <div className="flex flex-col gap-7 px-5 pt-6 pb-10">
+      {/* Today's Status */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+        <Card className="shadow-xl shadow-black/5 rounded-[2rem] border-none">
+          <CardContent className="p-6">
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-foreground">Today&apos;s Status</h2>
+              {todayAttendance && (
+                <StatusBadge label="Present" tone="success" />
+              )}
+            </div>
+            {todayAttendance ? (
               <div>
-                <p className="text-xs font-semibold text-emerald-600">Present</p>
                 {todayAttendance.checkInTime && (
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Checked in at {format(todayAttendance.checkInTime, 'hh:mm a')}
+                  <p className="text-2xl font-bold text-foreground">
+                    {format(todayAttendance.checkInTime, 'hh:mm a')}
                   </p>
                 )}
                 {todayAttendance.site && (
-                  <p className="text-xs text-slate-500">{todayAttendance.site.name}</p>
+                  <p className="mt-1 text-xs text-foreground-muted">{todayAttendance.site.name}</p>
                 )}
               </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
-                <Clock className="w-5 h-5 text-slate-400" />
+            ) : (
+              <div className="flex items-start gap-4">
+                <div className="mt-0.5 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-100">
+                  <Clock className="h-6 w-6 text-slate-500" />
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-[17px] font-bold text-slate-900">Not checked in yet</p>
+                  <p className="mt-1 text-[13px] text-slate-500">Tap Mark Attendance to begin</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs font-semibold text-slate-600">Not checked in yet</p>
-                <p className="text-xs text-slate-500 mt-0.5">Tap Mark Attendance to begin</p>
-              </div>
-            </div>
-          )}
-        </motion.div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
-        {/* Stats Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-4 gap-3"
-        >
-          {/* Total Days */}
-          <div className="rounded-[1.2rem] border border-slate-200 bg-white p-3 text-center shadow-sm">
-            <p className="text-2xl font-bold text-slate-950">{stats.totalDays}</p>
-            <p className="text-xs text-slate-500 mt-1">Total Days</p>
-          </div>
+      {/* Stats Grid */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="grid grid-cols-4 gap-3"
+      >
+        {[
+          { value: stats.totalDays, label: 'Total Days', className: '' },
+          { value: stats.presentDays, label: 'Present', className: 'text-emerald-600' },
+          { value: stats.absentDays, label: 'Absent', className: 'text-red-600' },
+          { value: stats.pendingLeaves, label: 'Leaves', className: '' },
+        ].map((stat) => (
+          <Card key={stat.label} className="border-none shadow-md shadow-black/5 rounded-2xl">
+            <CardContent className="p-3.5 text-center">
+              <p className={`text-xl font-bold leading-none ${stat.className || 'text-foreground'}`}>
+                {stat.value}
+              </p>
+              <p className={`mt-1 text-[10px] ${stat.className || 'text-foreground-muted'}`}>
+                {stat.label}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </motion.div>
 
-          {/* Present */}
-          <div className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 p-3 text-center shadow-sm">
-            <p className="text-2xl font-bold text-emerald-600">{stats.presentDays}</p>
-            <p className="text-xs text-emerald-600 mt-1">Present</p>
-          </div>
-
-          {/* Absent */}
-          <div className="rounded-[1.2rem] border border-red-200 bg-red-50 p-3 text-center shadow-sm">
-            <p className="text-2xl font-bold text-red-600">{stats.absentDays}</p>
-            <p className="text-xs text-red-600 mt-1">Absent</p>
-          </div>
-
-          {/* Leaves */}
-          <div className="rounded-[1.2rem] border border-slate-200 bg-white p-3 text-center shadow-sm">
-            <p className="text-2xl font-bold text-slate-950">{stats.pendingLeaves}</p>
-            <p className="text-xs text-slate-500 mt-1">Leaves</p>
-          </div>
-        </motion.div>
-
-        {/* Mark Attendance Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-        >
-          <Link
-            href="/worker/attendance"
-            className="flex items-center justify-center gap-2 w-full rounded-[1.5rem] bg-gradient-to-r from-blue-600 to-blue-700 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:shadow-lg hover:shadow-blue-600/30"
-          >
-            <Camera className="w-5 h-5" />
+      {/* Primary action */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+        <Link href="/worker/attendance" className="block">
+          <Button variant="primary" className="h-[60px] w-full text-[17px] font-bold rounded-2xl shadow-lg shadow-brand/25">
+            <Camera className="h-5 w-5 mr-2.5" />
             Mark Attendance
-          </Link>
-        </motion.div>
+          </Button>
+        </Link>
+      </motion.div>
 
-        {/* Request Leave */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Link
-            href="/worker/leave"
-            className="flex items-center justify-center gap-2 w-full rounded-[1.2rem] border border-slate-200 bg-white py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:border-slate-300"
-          >
-            <Calendar className="w-4 h-4" />
-            Request Leave
-          </Link>
-        </motion.div>
-
-        {/* My Approvals */}
-        {approvalLeaves.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold text-slate-900">My Approvals</h2>
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-xs font-bold text-blue-600">
-                {approvalLeaves.length}
+      {/* Secondary actions */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.18 }}
+        className="grid grid-cols-2 gap-3"
+      >
+        <Link href="/worker/leave">
+          <Card className="border-none shadow-md shadow-black/5 rounded-2xl transition-all hover:bg-slate-50 active:scale-[0.98]">
+            <CardContent className="flex items-center gap-3 p-5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-elevated">
+                <Calendar className="h-4 w-4 text-brand" />
+              </div>
+              <span className="text-[13px] font-semibold text-foreground">Request Leave</span>
+            </CardContent>
+          </Card>
+        </Link>
+        <Card className={`border-none shadow-md shadow-black/5 rounded-2xl ${approvalLeaves.length > 0 ? '' : 'opacity-80'}`}>
+          <CardContent className="flex items-center justify-between gap-2 p-5">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-surface-elevated">
+                <PalmtreeIcon className="h-4 w-4 text-brand" />
+              </div>
+              <span className="text-[13px] font-semibold text-foreground truncate">My Approvals</span>
+            </div>
+            {approvalLeaves.length > 0 && (
+              <span className="flex-shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700">
+                {approvalLeaves.length} Pending
               </span>
-            </div>
-            <p className="text-xs text-slate-500">View your leave status</p>
-          </motion.div>
-        )}
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
-        {/* Recent Activity */}
-        {recentRecords.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-slate-900">Recent Activity</h2>
-              <Link href="/worker/history" className="text-xs font-semibold text-blue-600 hover:text-blue-700">
-                View all
-              </Link>
-            </div>
-            <div className="space-y-3">
-              {recentRecords.slice(0, 3).map((record, idx) => (
-                <motion.div
-                  key={record.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + idx * 0.05 }}
-                  className="flex items-start gap-3 pb-3 border-b border-slate-100 last:border-0 last:pb-0"
-                >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full flex-shrink-0 mt-0.5">
-                    {record.status === 'PRESENT' || record.status === 'LATE' ? (
-                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                    ) : record.status === 'ABSENT' ? (
-                      <div className="w-2 h-2 rounded-full bg-red-500" />
-                    ) : (
-                      <div className="w-2 h-2 rounded-full bg-orange-500" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs font-semibold text-slate-900 capitalize">
-                        {record.status === 'HALF_DAY' ? 'Half Day' : record.status.toLowerCase()}
-                      </p>
-                      {record.checkInTime && (
-                        <p className="text-xs text-slate-500">{format(record.checkInTime, 'hh:mm a')}</p>
+      {/* Recent Activity */}
+      {recentRecords.length > 0 && (
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}>
+          <Card className="border-none shadow-md shadow-black/5 rounded-2xl">
+            <CardContent className="p-6">
+              <h2 className="mb-3 text-sm font-semibold text-foreground">Recent Activity</h2>
+              <div className="space-y-0">
+                {recentRecords.slice(0, 4).map((record, idx) => (
+                  <div
+                    key={record.id}
+                    className="flex items-start gap-3 py-2.5 border-b border-surface-border last:border-0"
+                  >
+                    <div className="flex flex-col items-center pt-1.5">
+                      <div className={`h-2 w-2 rounded-full ${dotColor(record.status, !!record.checkOutTime)}`} />
+                      {idx < Math.min(recentRecords.length, 4) - 1 && (
+                        <div className="mt-1 w-px flex-1 bg-surface-border min-h-[20px]" />
                       )}
                     </div>
-                    {record.site && (
-                      <p className="text-xs text-slate-500 mt-0.5">{record.site.name}</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-medium text-foreground">
+                        {record.checkOutTime ? 'Checked out' : record.checkInTime ? 'Checked in' : record.status.toLowerCase()}
+                      </p>
+                      {record.site && (
+                        <p className="text-[11px] text-foreground-muted truncate">{record.site.name}</p>
+                      )}
+                    </div>
+                    {(record.checkInTime || record.checkOutTime) && (
+                      <p className="flex-shrink-0 text-[11px] text-foreground-subtle">
+                        {format(record.checkOutTime ?? record.checkInTime!, 'hh:mm a')}
+                      </p>
                     )}
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
     </div>
   )
 }
-
