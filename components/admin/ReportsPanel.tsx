@@ -18,11 +18,11 @@ export function ReportsPanel(){
       </div>
       <div className="mt-6 text-sm text-slate-600">Quick reports:</div>
       <ul className="mt-3 space-y-2 text-sm">
-        <li className="flex items-center justify-between rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3">
+        <li className="flex items-center justify-between rounded-[1rem] border border-slate-200 bg-white px-4 py-3.5 hover:bg-slate-50 cursor-pointer transition-colors">
           <span>Daily attendance</span>
           <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition">Run</button>
         </li>
-        <li className="flex items-center justify-between rounded-[1rem] border border-slate-200 bg-slate-50 px-4 py-3">
+        <li className="flex items-center justify-between rounded-[1rem] border border-slate-200 bg-white px-4 py-3.5 hover:bg-slate-50 cursor-pointer transition-colors">
           <span>Site coverage</span>
           <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition">Run</button>
         </li>

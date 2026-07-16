@@ -1,15 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Card, CardContent } from '@/components/ui/Card'
-import { Sparkline } from '@/components/ui/Sparkline'
-import { Camera, FileText, MapPin, Plus, Users, Building2, Clock, ShieldCheck } from 'lucide-react'
+import { Camera, MapPin, Users, Building2, ShieldCheck, ChevronRight, FileX, Clock, LineChart, TrendingUp, TrendingDown, Minus, Download, Plus, MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { RecentAttendance } from '@/components/admin/RecentAttendance'
 import { SiteCoverageList } from '@/components/admin/SiteCoverageList'
 import { AttendanceTrendChart } from '@/components/admin/charts/AttendanceTrendChart'
-import type { ReactNode } from 'react'
-import { PageShell } from '@/components/ui/Layout'
 
 interface DashboardContentProps {
   firstName: string
@@ -28,239 +24,195 @@ interface DashboardContentProps {
     recentAttendance: any[]
     priorityAlerts: any[]
     statsByStatus: Record<string, number>
+    changes: {
+      total: string
+    }
+    trendData: any[]
   }
 }
 
-const kpiSparklines = {
-  total: [120, 122, 125, 128, 130, 131, 132],
-  present: [85, 88, 90, 92, 95, 96, 98],
-  sites: [4, 4, 4, 4, 4, 4, 4],
-  leaves: [12, 10, 9, 11, 8, 9, 8],
-}
-
-function KpiCard({
-  icon,
-  iconTone,
-  label,
+function StatCard({
+  title,
   value,
-  change,
-  changeTone = 'text-emerald-600',
-  sparkData,
-  sparkColor,
+  trend,
+  trendValue,
+  icon: Icon,
+  iconColor = "text-blue-600",
+  iconBg = "bg-blue-50"
 }: {
-  icon: ReactNode
-  iconTone: string
-  label: string
-  value: number
-  change: string
-  changeTone?: string
-  sparkData: number[]
-  sparkColor: string
+  title: string
+  value: string | number
+  trend: 'up' | 'down' | 'neutral'
+  trendValue: string
+  icon: any
+  iconColor?: string
+  iconBg?: string
 }) {
   return (
-    <Card className="overflow-hidden bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] min-h-[146px] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
-      <CardContent className="flex h-full flex-col p-6">
-        <div className="mb-3 flex justify-between items-start">
-          <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[1rem] ${iconTone}`}>
-            {icon}
-          </div>
+    <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between mb-6">
+        <div className={`flex h-12 w-12 items-center justify-center rounded-full ${iconBg}`}>
+          <Icon className={`h-6 w-6 ${iconColor}`} />
         </div>
-        <p className="text-[13px] font-semibold text-slate-500 uppercase tracking-wide">{label}</p>
-        <p className="mt-1 text-[2.5rem] font-bold tracking-tight text-slate-900 leading-none">{value}</p>
-        <div className="mt-auto flex items-end justify-between gap-2 pt-5">
-          <p className={`text-[13px] font-bold ${changeTone}`}>{change}</p>
-          <Sparkline data={sparkData} color={sparkColor} height={28} className="w-[80px]" />
+        <div className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full ${
+          trend === 'up' ? 'text-emerald-700 bg-emerald-50' : 
+          trend === 'down' ? 'text-red-700 bg-red-50' : 
+          'text-slate-600 bg-slate-50'
+        }`}>
+          {trend === 'up' && <TrendingUp className="h-3.5 w-3.5" />}
+          {trend === 'down' && <TrendingDown className="h-3.5 w-3.5" />}
+          {trend === 'neutral' && <Minus className="h-3.5 w-3.5" />}
+          <span>{trendValue}</span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-slate-500 mb-1">{title}</p>
+        <h3 className="text-3xl font-bold text-slate-900 tracking-tight">{value}</h3>
+      </div>
+    </div>
   )
 }
 
 export function DashboardContent({ firstName, coverage, data }: DashboardContentProps) {
-  // Actions are now dynamically generated based on operational issues
-
-  const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
-
   return (
-      <PageShell className="space-y-8">
-      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-        <h1 className="text-3xl font-bold leading-tight tracking-tight text-slate-900">
-          {greeting}, {firstName} 👋
-        </h1>
-        <p className="mt-1.5 text-sm text-slate-500">
-          Here's what's happening with your workforce today.
-        </p>
-      </motion.div>
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+            Dashboard
+          </h1>
+          <p className="text-slate-500 mt-1.5 font-medium">
+            Welcome back, {firstName}. Here is your workforce overview for today.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors">
+            <Download className="h-4 w-4 text-slate-500" /> Export
+          </button>
+          <Link href="/admin/attendance/mark" className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors">
+            <Camera className="h-4 w-4 text-slate-500" /> Mark Check-in
+          </Link>
+          <Link href="/admin/employees/new" className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 transition-colors">
+            <Plus className="h-4 w-4" /> Add Worker
+          </Link>
+        </div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-        className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4"
-      >
-        <KpiCard
-          icon={<Users className="h-5 w-5 text-blue-600" />}
-          iconTone="bg-blue-100 rounded-full"
-          label="Total Workers"
+      {/* KPI CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Workers"
           value={data.totalEmployees}
-          change="↑ 12 this week"
-          sparkData={kpiSparklines.total}
-          sparkColor="#2563EB"
+          trend="up"
+          trendValue="5% vs last week"
+          icon={Users}
+          iconColor="text-blue-600"
+          iconBg="bg-blue-50"
         />
-        <KpiCard
-          icon={<ShieldCheck className="h-5 w-5 text-emerald-600" />}
-          iconTone="bg-emerald-100 rounded-lg"
-          label="Present Today"
+        <StatCard
+          title="Present Today"
           value={data.presentToday}
-          change={`${coverage}% of total`}
-          sparkData={kpiSparklines.present}
-          sparkColor="#10B981"
+          trend="neutral"
+          trendValue={`${coverage}% coverage`}
+          icon={ShieldCheck}
+          iconColor="text-emerald-600"
+          iconBg="bg-emerald-50"
         />
-        <KpiCard
-          icon={<Building2 className="h-5 w-5 text-purple-600" />}
-          iconTone="bg-purple-100 rounded-full"
-          label="Active Sites"
+        <StatCard
+          title="Active Sites"
           value={data.activeSites}
-          change="100% operational"
-          changeTone="text-purple-600"
-          sparkData={kpiSparklines.sites}
-          sparkColor="#8B5CF6"
+          trend="neutral"
+          trendValue="All operational"
+          icon={Building2}
+          iconColor="text-purple-600"
+          iconBg="bg-purple-50"
         />
-        <KpiCard
-          icon={<FileText className="h-5 w-5 text-orange-600" />}
-          iconTone="bg-orange-100 rounded-full"
-          label="Pending Leaves"
+        <StatCard
+          title="Pending Leaves"
           value={data.pendingLeaves}
-          change="Requires action"
-          changeTone="text-orange-600"
-          sparkData={kpiSparklines.leaves}
-          sparkColor="#F97316"
+          trend="down"
+          trendValue="Requires action"
+          icon={Clock}
+          iconColor="text-orange-600"
+          iconBg="bg-orange-50"
         />
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid gap-6 lg:grid-cols-[1.7fr_1fr]"
-      >
-        <Card className="bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <CardContent className="p-7">
-            <div className="mb-6 flex items-start justify-between gap-4">
+      {/* MAIN CONTENT AREA */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* LEFT COLUMN (Chart & Activity) */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Chart Card */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="border-b border-slate-100 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h2 className="text-base font-bold text-slate-900">Attendance Overview</h2>
-                <p className="mt-1 text-[13px] text-slate-500">Attendance trend for the last 7 days</p>
+                <h2 className="text-lg font-bold text-slate-900">Attendance Overview</h2>
+                <p className="text-sm text-slate-500 mt-1">Workforce presence across all active sites.</p>
               </div>
-              <div className="flex items-center gap-4 text-[12px] text-slate-500 font-semibold">
-                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-slate-300 border border-dashed border-slate-400" />Scheduled</span>
-                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />Present</span>
-                <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-red-500" />Absent</span>
+              <button className="flex items-center gap-2 text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors">
+                Last 7 days <MoreHorizontal className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="mb-6 flex flex-wrap items-center gap-6 text-sm font-medium text-slate-600">
+                <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-slate-300" />Scheduled</div>
+                <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-emerald-500" />Present</div>
+                <div className="flex items-center gap-2"><span className="h-3 w-3 rounded-full bg-red-500" />Absent</div>
+              </div>
+              <div className="h-[300px] w-full -ml-4">
+                <AttendanceTrendChart embedded initialData={data.trendData} />
               </div>
             </div>
-            <AttendanceTrendChart embedded />
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <CardContent className="p-7">
-            <div className="mb-6 flex items-start justify-between gap-3">
+          {/* Recent Activity Card */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="border-b border-slate-100 p-6 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-slate-900">Site Coverage</h2>
-                <p className="mt-1 text-[13px] text-slate-500">Live attendance by site</p>
+                <h2 className="text-lg font-bold text-slate-900">Recent Activity</h2>
+                <p className="text-sm text-slate-500 mt-1">Latest check-ins and system updates.</p>
               </div>
-              <Link href="/admin/sites" className="text-[13px] font-bold text-brand hover:text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg transition-colors">
+              <Link href="/admin/attendance" className="text-sm font-bold text-blue-600 hover:text-blue-700">
                 View all
               </Link>
             </div>
-            <SiteCoverageList sites={data.sites} />
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="grid gap-6 lg:grid-cols-[1.45fr_1fr]"
-      >
-        <Card className="bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <CardContent className="p-7">
-            <div className="mb-6 flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-base font-bold text-slate-900">Recent Activity</h2>
-                <p className="mt-1 text-[13px] text-slate-500">Latest check-ins and updates</p>
-              </div>
-              <Link href="/admin/attendance" className="text-[13px] font-bold text-brand hover:text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg transition-colors">
-                View all
-              </Link>
+            <div className="p-0">
+              {data.recentAttendance.length > 0 ? (
+                <RecentAttendance records={data.recentAttendance} />
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="bg-slate-50 p-4 rounded-full mb-4">
+                    <FileX className="h-8 w-8 text-slate-400" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 mb-1">No recent activity</h3>
+                  <p className="text-sm text-slate-500">Check-ins will appear here.</p>
+                </div>
+              )}
             </div>
-            {data.recentAttendance.length > 0 ? (
-              <RecentAttendance records={data.recentAttendance} />
-            ) : (
-              <div className="rounded-xl border border-dashed border-slate-200 py-10 text-center text-sm font-medium text-slate-500">
-                No recent activity
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <div className="flex flex-col gap-6">
-          <Card className="bg-white rounded-[1.5rem] border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <CardContent className="p-7">
-              <div className="mb-5">
-                <h2 className="text-base font-bold text-slate-900">Quick Actions</h2>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <Link href="/admin/attendance/mark" className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-3 hover:bg-slate-50 transition shadow-sm hover:shadow-md">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand">
-                    <Camera className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-bold text-slate-900">Mark Attendance</div>
-                    <div className="text-[11px] font-medium text-slate-500">Capture check-in</div>
-                  </div>
-                </Link>
-                <Link href="/admin/employees/new" className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-3 hover:bg-slate-50 transition shadow-sm hover:shadow-md">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand">
-                    <Users className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-bold text-slate-900">Register Worker</div>
-                    <div className="text-[11px] font-medium text-slate-500">Add new workforce</div>
-                  </div>
-                </Link>
-                <Link href="/admin/reports" className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-3 hover:bg-slate-50 transition shadow-sm hover:shadow-md">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-bold text-slate-900">View Reports</div>
-                    <div className="text-[11px] font-medium text-slate-500">Analytics & insights</div>
-                  </div>
-                </Link>
-                <Link href="/admin/sites" className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-3 hover:bg-slate-50 transition shadow-sm hover:shadow-md">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-brand">
-                    <Building2 className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <div className="text-[13px] font-bold text-slate-900">Manage Sites</div>
-                    <div className="text-[11px] font-medium text-slate-500">Update site details</div>
-                  </div>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="relative flex min-h-[88px] items-center gap-3 overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/90 to-white px-5 py-4">
-            <div>
-              <p className="text-sm font-semibold text-foreground">All systems operational</p>
-              <p className="text-xs text-foreground-muted">Everything is running smoothly.</p>
-            </div>
-            <ShieldCheck className="absolute right-4 top-1/2 h-12 w-12 -translate-y-1/2 text-blue-200/50" />
           </div>
         </div>
-      </motion.div>
-    </PageShell>
+
+        {/* RIGHT COLUMN (Site Coverage) */}
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden h-full">
+            <div className="border-b border-slate-100 p-6 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Site Coverage</h2>
+                <p className="text-sm text-slate-500 mt-1">Live attendance by location.</p>
+              </div>
+              <Link href="/admin/sites" className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors">
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="p-4">
+              <SiteCoverageList sites={data.sites} />
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
   )
 }

@@ -87,13 +87,13 @@ export function AttendanceTable({ initialRecords }: { initialRecords: Attendance
                 </tr>
               ) : (
                 filteredRecords.map((record) => (
-                  <tr key={record.id} className="hover:bg-slate-50/80 transition-colors">
+                  <tr key={record.id} className="hover:bg-slate-50/80 transition-colors even:bg-slate-50/40">
                     <td className="px-5 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         {record.user.profileImageUrl ? (
-                          <img src={record.user.profileImageUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+                          <img src={record.user.profileImageUrl} alt="" className="h-9 w-9 rounded-full object-cover" />
                         ) : (
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-700">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-[10px] font-bold text-blue-700">
                             {(record.user.name || 'U').charAt(0).toUpperCase()}
                           </div>
                         )}
@@ -113,7 +113,7 @@ export function AttendanceTable({ initialRecords }: { initialRecords: Attendance
                       <div className="text-xs font-bold text-slate-900">{record.checkOutTime ? formatTime(record.checkOutTime) : '—'}</div>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap">
-                      <span className={cn('inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide', getStatusColor(record.status))}>
+                      <span className={cn('inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide', getStatusColor(record.status))}>
                         {getStatusLabel(record.status)}
                       </span>
                     </td>

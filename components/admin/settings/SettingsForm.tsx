@@ -24,12 +24,12 @@ interface Props {
 
 function SettingSection({ title, icon: Icon, children }: { title: string; icon: React.ElementType; children: React.ReactNode }) {
   return (
-    <div className="rounded-[1.5rem] border border-slate-200/80 bg-white p-6 space-y-4 shadow-sm">
+    <div className="rounded-[1.5rem] border border-slate-200/80 bg-white p-6 space-y-5 shadow-sm">
       <div className="flex items-center gap-2.5 pb-3 border-b border-slate-200">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[1rem] bg-blue-50 text-blue-600">
           <Icon className="w-4 h-4" />
         </div>
-        <h2 className="font-semibold text-sm text-slate-900">{title}</h2>
+        <h2 className="font-semibold text-base text-slate-900">{title}</h2>
       </div>
       {children}
     </div>
@@ -80,10 +80,10 @@ export function SettingsForm({ settings }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
       <SettingSection title="Company Info" icon={Building}>
         <Field label="Company Name">
-          <input {...register('companyName')} className={inputClass} style={{ width: 200 }} />
+          <input {...register('companyName')} className={inputClass} style={{ width: 208 }} />
         </Field>
         <Field label="Timezone">
-          <input {...register('timezone')} className={inputClass} style={{ width: 200 }} />
+          <input {...register('timezone')} className={inputClass} style={{ width: 208 }} />
         </Field>
       </SettingSection>
 

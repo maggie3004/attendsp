@@ -30,8 +30,8 @@ export function WorkerHeader({ user }: WorkerHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 bg-gradient-to-br from-[#1E40AF] to-[#1e3a8a] py-4 shadow-md safe-top">
-      <div className="flex items-center gap-3 px-4">
+    <header className="sticky top-0 z-30 bg-gradient-to-br from-brand-700 to-brand-800 py-4 shadow-md safe-top">
+      <div className="flex items-center gap-3 px-5">
         <button
           onClick={() => window.dispatchEvent(new Event('toggleWorkerSidebar'))}
           className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white/10 text-white transition hover:bg-white/20 lg:hidden"

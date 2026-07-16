@@ -39,11 +39,12 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
   return null
 }
 
-export function AttendanceTrendChart({ embedded = false }: { embedded?: boolean }) {
-  const [data, setData] = useState<TrendData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+export function AttendanceTrendChart({ embedded = false, initialData }: { embedded?: boolean; initialData?: TrendData[] }) {
+  const [data, setData] = useState<TrendData[]>(initialData || [])
+  const [isLoading, setIsLoading] = useState(!initialData)
 
   useEffect(() => {
+    if (initialData && initialData.length > 0) return
     fetch('/api/reports/trend?days=7')
       .then((r) => r.json())
       .then((d) => { setData(d.data ?? []); setIsLoading(false) })

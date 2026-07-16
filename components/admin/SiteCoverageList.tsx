@@ -39,22 +39,18 @@ export function SiteCoverageList({ sites }: SiteCoverageListProps) {
         const pct = total > 0 ? Math.round((present / total) * 100) : 0
 
         return (
-          <div key={site.id} className="flex items-center gap-3">
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-              <MapPin className="h-4 w-4 flex-shrink-0 text-brand" />
+          <div key={site.id} className="flex items-center justify-between py-1">
+            <div className="flex min-w-0 flex-1 items-start gap-4">
+              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                <MapPin className="h-3.5 w-3.5" />
+              </div>
               <div className="min-w-0">
-                <p className="truncate text-[13px] font-bold text-foreground">{site.name}</p>
-                <p className="text-[11px] font-medium text-foreground-muted mt-0.5">{present} / {total} present</p>
+                <p className="truncate text-[14px] font-bold text-slate-900">{site.name}</p>
+                <p className="text-[12px] font-medium text-slate-500 mt-0.5">{present} / {total} present</p>
               </div>
             </div>
-            <div className="flex w-[130px] flex-shrink-0 items-center gap-3">
-              <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-border/50">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${getBarColor(pct)}`}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-              <span className="w-8 text-right text-[12px] font-bold text-foreground">{pct}%</span>
+            <div className="flex shrink-0 items-center pl-4">
+              <span className="text-[14px] font-bold text-slate-900">{pct}%</span>
             </div>
           </div>
         )

@@ -169,12 +169,12 @@ export function ReportsBuilder() {
   const summaryStats = useMemo(() => buildSummaryStats(data), [data])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* ------------------------------------------------------------------ */}
       {/* Filter panel                                                         */}
       {/* ------------------------------------------------------------------ */}
       <div className="rounded-[1.5rem] border border-slate-200/60 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Report Filters</h2>
+        <h2 className="text-lg font-semibold text-slate-900 mb-5">Report Filters</h2>
         <div className="grid gap-4 lg:grid-cols-[1.2fr_1.2fr_auto]">
           <div className="space-y-1.5">
             <label className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">From Date</label>
@@ -423,7 +423,7 @@ export function ReportsBuilder() {
 
 function StatBox({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div className="rounded-[1rem] border border-slate-200/80 bg-slate-50 px-4 py-4">
+    <div className="rounded-[1rem] border border-slate-200/60 bg-white shadow-sm px-5 py-5">
       <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500 mb-1">{label}</p>
       <p className={cn('text-2xl font-bold tabular-nums', color)}>{value}</p>
     </div>

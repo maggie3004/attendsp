@@ -52,7 +52,7 @@ interface PageSectionProps {
 
 export function PageSection({ title, description, action, children, className }: PageSectionProps) {
   return (
-    <section className={cn('space-y-4', className)}>
+    <section className={cn('space-y-5', className)}>
       {(title || description || action) && (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-1">
@@ -223,7 +223,7 @@ export function SectionCard({ title, description, action, children, className }:
   return (
     <Card className={cn('overflow-hidden', className)}>
       {(title || description || action) && (
-        <div className="flex flex-col gap-2 border-b border-surface-border px-5 py-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-2 border-b border-surface-border px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
             {title && <h3 className="text-base font-semibold text-foreground">{title}</h3>}
             {description && <p className="text-xs text-foreground-muted">{description}</p>}
@@ -231,7 +231,7 @@ export function SectionCard({ title, description, action, children, className }:
           {action && <div className="shrink-0">{action}</div>}
         </div>
       )}
-      <div className="p-5">{children}</div>
+      <div className="p-6 lg:p-8">{children}</div>
     </Card>
   )
 }

@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminTopbar } from '@/components/admin/AdminTopbar'
+import { SidebarProvider } from '@/components/admin/SidebarContext'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -9,14 +10,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (session.user.role === 'WORKER') redirect('/worker/attendance')
 
   return (
-    <div className="flex min-h-dvh overflow-hidden bg-surface">
-      <AdminSidebar />
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+    <SidebarProvider>
+      <div className="flex flex-col min-h-dvh overflow-hidden bg-surface">
         <AdminTopbar user={session.user} />
-        <main className="flex-1 overflow-y-auto bg-slate-50">
-          {children}
-        </main>
+        <div className="flex min-w-0 flex-1 overflow-hidden">
+          <AdminSidebar />
+          <main className="flex-1 min-w-0 overflow-y-auto bg-slate-100">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }

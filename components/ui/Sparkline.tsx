@@ -32,16 +32,6 @@ export function Sparkline({ data, color = '#2563EB', className, height = 32 }: S
       className={cn('w-20', className)}
       preserveAspectRatio="none"
     >
-      <defs>
-        <linearGradient id={`spark-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <polygon
-        points={areaPoints}
-        fill={`url(#spark-${color.replace('#', '')})`}
-      />
       <polyline
         points={points}
         fill="none"

@@ -198,7 +198,7 @@ export function SitesGrid({ sites }: { sites: Site[] }) {
   return (
     <div className="flex flex-col gap-6">
       {/* Toggle bar - Premium UI */}
-      <div className="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex items-center justify-between bg-white px-5 py-4 rounded-2xl border border-slate-200 shadow-sm">
         <div className="flex flex-col">
           <h2 className="text-sm font-semibold text-slate-900">Operational Intelligence</h2>
           <p className="text-xs text-slate-500">Prioritizing sites that need attention.</p>
@@ -257,7 +257,7 @@ export function SitesGrid({ sites }: { sites: Site[] }) {
                 onClick={() => router.push(`/admin/sites/${site.id}`)}
               >
                 {/* Top color bar indicator */}
-                <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: c.ring }} />
+                <div className="absolute top-0 left-0 right-0 h-1.5" style={{ backgroundColor: c.ring }} />
 
                 <div className="flex items-start justify-between mb-4">
                   <div>
@@ -278,19 +278,19 @@ export function SitesGrid({ sites }: { sites: Site[] }) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                  <div className="rounded-[0.75rem] border border-slate-100 bg-slate-50 p-4">
                     <div className="flex items-center gap-1.5 mb-1 text-slate-500">
                       <Users className="h-3.5 w-3.5" />
                       <span className="text-xs font-medium">Coverage</span>
                     </div>
-                    <p className="text-lg font-bold text-slate-900">{workers}</p>
+                    <p className="text-xl font-bold text-slate-900">{workers}</p>
                   </div>
-                  <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
+                  <div className="rounded-[0.75rem] border border-slate-100 bg-slate-50 p-4">
                     <div className="flex items-center gap-1.5 mb-1 text-slate-500">
                       <Clock className="h-3.5 w-3.5" />
                       <span className="text-xs font-medium">Attendance</span>
                     </div>
-                    <p className="text-lg font-bold text-slate-900">{attendancePct}%</p>
+                    <p className="text-xl font-bold text-slate-900">{attendancePct}%</p>
                   </div>
                 </div>
 

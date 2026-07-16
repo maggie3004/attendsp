@@ -20,14 +20,14 @@ export default async function LeavesPage() {
 
   return (
     <PageShell>
-      <div className="space-y-6">
+      <div className="space-y-8">
         <PageHeader
           eyebrow="Leave management"
           title="Leave Requests"
           description={`${pendingLeaves.length} pending ${pendingLeaves.length === 1 ? 'request' : 'requests'} awaiting review.`}
         />
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-3">
           <StatsCard
             label="Pending"
             value={pendingLeaves.length}

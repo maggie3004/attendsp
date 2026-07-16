@@ -56,7 +56,7 @@ export function RecentAttendance({ records }: RecentAttendanceProps) {
         return (
           <div
             key={record.id}
-            className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0"
+            className="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0"
           >
             {record.user.profileImageUrl ? (
               <img src={record.user.profileImageUrl} alt="" className="h-10 w-10 flex-shrink-0 rounded-full object-cover" />

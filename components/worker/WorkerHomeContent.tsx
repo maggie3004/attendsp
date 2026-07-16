@@ -52,7 +52,7 @@ export function WorkerHomeContent({
         <Card className="shadow-xl shadow-black/5 rounded-[2rem] border-none">
           <CardContent className="p-6">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-foreground">Today&apos;s Status</h2>
+              <h2 className="text-base font-semibold text-foreground">Today&apos;s Status</h2>
               {todayAttendance && (
                 <StatusBadge label="Present" tone="success" />
               )}
@@ -88,7 +88,7 @@ export function WorkerHomeContent({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="grid grid-cols-4 gap-3"
+        className="grid grid-cols-4 gap-2"
       >
         {[
           { value: stats.totalDays, label: 'Total Days', className: '' },
@@ -97,11 +97,11 @@ export function WorkerHomeContent({
           { value: stats.pendingLeaves, label: 'Leaves', className: '' },
         ].map((stat) => (
           <Card key={stat.label} className="border-none shadow-md shadow-black/5 rounded-2xl">
-            <CardContent className="p-3.5 text-center">
-              <p className={`text-xl font-bold leading-none ${stat.className || 'text-foreground'}`}>
+            <CardContent className="p-4 text-center">
+              <p className={`text-2xl font-bold leading-none ${stat.className || 'text-foreground'}`}>
                 {stat.value}
               </p>
-              <p className={`mt-1 text-[10px] ${stat.className || 'text-foreground-muted'}`}>
+              <p className={`mt-1 text-[11px] font-semibold ${stat.className || 'text-foreground-muted'}`}>
                 {stat.label}
               </p>
             </CardContent>
@@ -158,12 +158,12 @@ export function WorkerHomeContent({
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}>
           <Card className="border-none shadow-md shadow-black/5 rounded-2xl">
             <CardContent className="p-6">
-              <h2 className="mb-3 text-sm font-semibold text-foreground">Recent Activity</h2>
+              <h2 className="mb-4 text-base font-semibold text-foreground">Recent Activity</h2>
               <div className="space-y-0">
                 {recentRecords.slice(0, 4).map((record, idx) => (
                   <div
                     key={record.id}
-                    className="flex items-start gap-3 py-2.5 border-b border-surface-border last:border-0"
+                    className="flex items-start gap-3 py-3 border-b border-surface-border last:border-0"
                   >
                     <div className="flex flex-col items-center pt-1.5">
                       <div className={`h-2 w-2 rounded-full ${dotColor(record.status, !!record.checkOutTime)}`} />

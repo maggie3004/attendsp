@@ -38,7 +38,7 @@ export function AuditLogTable({ logs }: { logs: AuditLog[] }) {
     <div className="rounded-[1.5rem] border border-slate-200/80 bg-white p-2 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
       <div className="overflow-x-auto rounded-[1rem] bg-white">
         <table className="w-full text-sm">
-          <thead>
+          <thead className="sticky top-0 z-10">
             <tr className="border-b border-slate-200/80 bg-slate-50 text-left text-[0.75rem] font-bold uppercase tracking-[0.24em] text-slate-500">
               <th className="px-5 py-3.5">Time</th>
               <th className="px-5 py-3.5">Actor</th>
@@ -50,7 +50,7 @@ export function AuditLogTable({ logs }: { logs: AuditLog[] }) {
           </thead>
           <tbody className="divide-y divide-slate-200/80">
             {logs.map((log) => (
-              <tr key={log.id} className="hover:bg-slate-50/80 transition-colors">
+              <tr key={log.id} className="hover:bg-slate-50/80 transition-colors even:bg-slate-50/40">
                 <td className="px-5 py-4 whitespace-nowrap">
                   <div className="text-xs font-bold text-slate-900">{timeAgo(log.createdAt)}</div>
                   <div className="text-[10px] font-medium text-slate-500">{formatDateTime(log.createdAt)}</div>

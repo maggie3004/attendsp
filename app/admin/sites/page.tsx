@@ -20,7 +20,7 @@ export default async function SitesPage() {
 
   return (
     <PageShell>
-      <div className="space-y-6">
+      <div className="space-y-8">
         <PageHeader
           eyebrow="Project operations"
           title="Sites"
@@ -32,7 +32,7 @@ export default async function SitesPage() {
           }
         />
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <StatsCard label="Active sites" value={sites.length} icon={<Building2 className="h-5 w-5 text-blue-600" />} accent="text-blue-600" tone="bg-blue-50" />
           <StatsCard label="Workers assigned" value={sites.reduce((sum, site) => sum + site._count.employeeAssignments, 0)} icon={<Users className="h-5 w-5 text-emerald-600" />} accent="text-emerald-600" tone="bg-emerald-50" />
           <StatsCard label="Attendance rate" value="82%" icon={<CircleCheckBig className="h-5 w-5 text-amber-600" />} accent="text-amber-600" tone="bg-amber-50" />

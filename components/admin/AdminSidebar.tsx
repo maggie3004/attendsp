@@ -18,8 +18,10 @@ import {
   PalmtreeIcon,
   Activity,
   ChevronDown,
+  ChevronsLeft
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useSidebar } from './SidebarContext'
 
 const operationsNav = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -55,14 +57,15 @@ function NavItem({
       href={item.href}
       onClick={onClick}
       className={cn(
-        'group relative flex h-[40px] items-center gap-3 rounded-xl px-3.5 transition-all duration-200',
+        'group relative flex h-[44px] items-center transition-all duration-150',
+        collapsed ? 'justify-center mx-4 rounded-xl' : 'gap-3 mr-4 rounded-r-full pl-8',
         isActive
-          ? 'bg-brand-50 text-brand font-semibold shadow-sm ring-1 ring-brand/20'
-          : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+          ? 'bg-blue-50 text-blue-600 font-bold'
+          : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 font-medium'
       )}
     >
-      <Icon className={cn('h-[18px] w-[18px] flex-shrink-0', isActive ? 'text-brand' : 'text-slate-400 group-hover:text-slate-600')} />
-      {!collapsed && <span className="text-[13px] font-medium">{item.label}</span>}
+      <Icon className={cn('h-5 w-5 flex-shrink-0', isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600')} />
+      {!collapsed && <span className="text-[14px]">{item.label}</span>}
       {collapsed && (
         <div className="pointer-events-none absolute left-full z-50 ml-3 whitespace-nowrap rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
           {item.label}
@@ -73,9 +76,9 @@ function NavItem({
 }
 
 function NavSection({ label, collapsed }: { label: string; collapsed: boolean }) {
-  if (collapsed) return <div className="my-2" />
+  if (collapsed) return <div className="my-4" />
   return (
-    <div className="mb-2 mt-6 px-4 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500/80 first:mt-2">
+    <div className="mb-2 mt-8 pl-8 pr-4 text-[11px] font-bold uppercase tracking-wider text-slate-400 first:mt-2">
       {label}
     </div>
   )
@@ -84,16 +87,16 @@ function NavSection({ label, collapsed }: { label: string; collapsed: boolean })
 export function AdminSidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const [collapsed, setCollapsed] = useState(false)
+  const { collapsed, setCollapsed } = useSidebar()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    const width = collapsed ? '72px' : '260px'
+    const width = collapsed ? '88px' : '280px'
     document.documentElement.style.setProperty('--sidebar-current-width', width)
   }, [collapsed])
 
-  const userName = session?.user?.name ?? 'Admin'
-  const userRole = session?.user?.role === 'ADMIN' ? 'Administrator' : session?.user?.role ?? 'Admin'
+  const userName = session?.user?.name ?? 'Super Admin'
+  const userRole = session?.user?.role === 'ADMIN' ? 'SUPER_ADMIN' : session?.user?.role ?? 'SUPER_ADMIN'
 
   return (
     <>
@@ -111,97 +114,70 @@ export function AdminSidebar() {
 
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className="fixed left-4 top-4 z-50 rounded-xl border border-surface-border bg-white p-2.5 shadow-subtle lg:hidden"
+        className="fixed left-4 top-4 z-50 rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm lg:hidden"
         aria-label="Toggle menu"
       >
-        {mobileOpen ? <X className="h-5 w-5 text-foreground" /> : <Menu className="h-5 w-5 text-foreground" />}
+        {mobileOpen ? <X className="h-5 w-5 text-slate-900" /> : <Menu className="h-5 w-5 text-slate-900" />}
       </button>
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 flex h-full w-[260px] flex-col bg-white border-r border-slate-200/60 transition-transform duration-300 lg:relative lg:translate-x-0 lg:flex-shrink-0 shadow-sm',
-          collapsed && 'lg:w-[72px]',
+          'fixed inset-y-0 left-0 z-40 flex h-full w-[280px] flex-col bg-white transition-all duration-300 lg:relative lg:translate-x-0 lg:flex-shrink-0 border-l-[6px] border-l-blue-600 shadow-[4px_0_24px_rgba(0,0,0,0.02)]',
+          collapsed && 'lg:w-[88px]',
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
         style={{ width: collapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)' }}
       >
-        <div className="flex flex-shrink-0 items-center gap-3 border-b border-slate-200/60 px-5 py-[18px]">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand text-white shadow-sm">
-            <ShieldCheck className="h-5 w-5" />
-          </div>
-          {!collapsed && (
-            <div className="min-w-0">
-              <div className="text-[15px] font-bold tracking-tight text-slate-900">AttendSP</div>
-              <div className="truncate text-[11px] font-medium text-slate-500">Workforce Management</div>
-            </div>
-          )}
-        </div>
-
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <NavSection label="Operations" collapsed={collapsed} />
-          <div className="space-y-1">
-            {operationsNav.map((item) => (
-              <NavItem
-                key={item.href}
-                item={item}
-                isActive={pathname.startsWith(item.href)}
-                collapsed={collapsed}
-                onClick={() => setMobileOpen(false)}
-              />
-            ))}
-          </div>
-
-          <NavSection label="Management" collapsed={collapsed} />
-          <div className="space-y-1">
-            {managementNav.map((item) => (
-              <NavItem
-                key={item.href}
-                item={item}
-                isActive={pathname.startsWith(item.href)}
-                collapsed={collapsed}
-                onClick={() => setMobileOpen(false)}
-              />
-            ))}
-          </div>
-
-          <NavSection label="System" collapsed={collapsed} />
-          <div className="space-y-1">
-            {systemNav.map((item) => (
-              <NavItem
-                key={item.href}
-                item={item}
-                isActive={pathname.startsWith(item.href)}
-                collapsed={collapsed}
-                onClick={() => setMobileOpen(false)}
-              />
-            ))}
-          </div>
-        </nav>
-
-        {!collapsed && (
-          <div className="flex-shrink-0 border-t border-slate-200/60 p-3">
-            <div className="flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-2.5 border border-slate-100">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white shadow-sm">
-                {userName.charAt(0).toUpperCase()}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-[13px] font-semibold text-slate-900">{userName}</div>
-                <div className="truncate text-[11px] text-slate-500">{userRole}</div>
-              </div>
-              <ChevronDown className="h-4 w-4 flex-shrink-0 text-slate-400" />
-            </div>
-          </div>
-        )}
-
-        <div className="hidden border-t border-slate-200/60 p-3 lg:block">
+        <div className="hidden lg:flex pt-6 pb-2">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+            className={cn(
+              "flex w-full items-center text-slate-500 transition-all hover:text-slate-900",
+              collapsed ? "justify-center" : "pl-8"
+            )}
           >
-            <Menu className="h-4 w-4" />
-            {!collapsed && <span>Collapse</span>}
+            <Menu className="h-6 w-6 flex-shrink-0" />
           </button>
         </div>
+
+        <nav className="flex-1 overflow-hidden py-4 space-y-2">
+          <NavSection label="Operations" collapsed={collapsed} />
+          {operationsNav.map((item) => (
+            <NavItem
+              key={item.href}
+              item={item}
+              isActive={pathname.startsWith(item.href)}
+              collapsed={collapsed}
+              onClick={() => setMobileOpen(false)}
+            />
+          ))}
+
+          <NavSection label="Management" collapsed={collapsed} />
+          {managementNav.map((item) => (
+            <NavItem
+              key={item.href}
+              item={item}
+              isActive={pathname.startsWith(item.href)}
+              collapsed={collapsed}
+              onClick={() => setMobileOpen(false)}
+            />
+          ))}
+
+          <NavSection label="System" collapsed={collapsed} />
+          {systemNav.map((item) => (
+            <NavItem
+              key={item.href}
+              item={item}
+              isActive={pathname.startsWith(item.href)}
+              collapsed={collapsed}
+              onClick={() => setMobileOpen(false)}
+            />
+          ))}
+        </nav>
+
+
+
+
       </aside>
     </>
   )

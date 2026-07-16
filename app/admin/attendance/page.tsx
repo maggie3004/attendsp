@@ -26,7 +26,7 @@ export default async function AttendancePage() {
   
   return (
     <PageShell>
-      <div className="space-y-6">
+      <div className="space-y-8">
         <PageHeader
           eyebrow="Workforce Tracking"
           title="Attendance Management"
@@ -69,9 +69,16 @@ export default async function AttendancePage() {
           </Card>
         </div>
 
-        <div className="rounded-[1.5rem] border border-slate-200/60 bg-white p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <h2 className="text-base font-bold text-slate-900 mb-6">Today's Activity</h2>
-          <AttendanceTable initialRecords={records} />
+        <div className="rounded-[1.5rem] border border-slate-200/60 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200/80">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">Today's Activity</h2>
+              <p className="text-[13px] text-slate-500 mt-0.5">Live check-ins across all sites</p>
+            </div>
+          </div>
+          <div className="p-6">
+            <AttendanceTable initialRecords={records} />
+          </div>
         </div>
       </div>
     </PageShell>
