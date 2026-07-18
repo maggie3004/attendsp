@@ -10,8 +10,25 @@ const nextConfig: NextConfig = {
   },
 
   // These packages must run on the server only (not bundled into the client)
-  // Required for Prisma and bcryptjs to work correctly in Next.js 16
-  serverExternalPackages: ['@prisma/client', 'bcryptjs', 'face-api.js'],
+  // Required for Prisma, bcryptjs, face-api.js and cloudinary to work correctly in Next.js 16
+  serverExternalPackages: [
+    '@prisma/client',
+    'bcryptjs',
+    'face-api.js',
+    'cloudinary',
+    '@tensorflow/tfjs-node',
+    'canvas',
+  ],
+
+  // Exclude heavy packages from output file tracing — speeds up builds significantly
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/**',
+      'node_modules/webpack/**',
+      'node_modules/typescript/**',
+      'node_modules/eslint/**',
+    ],
+  },
 
   // Required headers for PWA and security
   async headers() {
